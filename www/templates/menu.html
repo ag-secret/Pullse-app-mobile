@@ -1,0 +1,51 @@
+<ion-side-menus enable-menu-with-back-views="false">
+    <ion-side-menu-content>
+        <ion-nav-bar class="bar-stable" title="Pullse">
+            <ion-nav-back-button>
+            </ion-nav-back-button>
+
+            <ion-nav-buttons side="left">
+                <button class="button button-icon button-clear ion-navicon-round btn-sidemenu-toggle" menu-toggle="left"></button>
+            </ion-nav-buttons>
+        </ion-nav-bar>
+        <ion-nav-view name="menuContent" ></ion-nav-view>
+    </ion-side-menu-content>
+
+    <ion-side-menu side="left">
+        <ion-content>
+            <div class="text-center sidemenu-header">
+                <img src="img/checkin-perfis/natalie.jpg" class="sidemenu-avatar">
+            </div>
+            <ion-list class="sidemenu-list">
+                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/eventos">
+                    <span class="icon ion-android-calendar"></span>
+                    <strong>Eventos</strong>
+                    <p>Os eventos da semana</p>
+                </a>
+                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/checkin">
+                    <span class="icon ion-ios-location"></span>
+                    <strong>Check-in</strong>
+                    <p>Os eventos da semana</p>
+                </a>
+                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/lista-vip">
+                    <span class="icon ion-android-list"></span>
+                    <strong>Lista Vip</strong>
+                    <p>Os eventos da semana</p>
+                </a>
+                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/contato">
+                    <span class="icon ion-android-mail"></span>
+                    <strong>Contato</strong>
+                    <p>Os eventos da semana</p>
+                </a>
+                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/institucional">
+                    <span class="icon ion-android-home"></span>
+                    <strong>Conheça a Pullse</strong>
+                    <p>Os eventos da semana</p>
+                </a>
+            </ion-list>
+
+            <a href="#/login" class="button button-icon icon ion-power menu-close pull-right" style="color: #CCC;"></a>
+
+        </ion-content>
+    </ion-side-menu>
+</ion-side-menus>

@@ -1,0 +1,193 @@
+/* Empty. Add your own CSS if you like */
+@font-face {
+    font-family: 'Gotham';
+    font-style: normal;
+    font-weight: 100;
+    src: local('../fonts/GOTHAM-BOOK.ttf'),
+    url('../fonts/GOTHAM-BOOK.ttf') format('truetype');
+}
+
+/*html, body{
+	font-family: 'Gotham';
+}*/
+
+/*.bar {
+	height:57px;
+	background-color: #000!important;
+	border: 0;
+}
+
+.has-header {
+	top: 57px!important;
+}
+
+.bar .title{
+	line-height: 57px!important;
+}
+.bar .btn-sidemenu-toggle {
+	top: 5px!important;
+}*/
+
+.bar-stable{
+	background-color: #000!important;
+	border: 0!important;
+}
+
+.button-stable {
+	background-color: #33dbe2!important;
+	border: 0!important;
+	color: #FFF!important;
+	border-radius: 5px;
+}
+
+.sidemenu-header {
+	background-image: url(../img/sidemenu-bg.jpg);
+	background-position: center center;
+	background-size: cover;
+}
+.btn-sidemenu-toggle {
+	color: #33dbe2!important;
+}
+.menu{
+	background-color: #1c1c1c;
+}
+.sidemenu-list {
+}
+.sidemenu-item {
+	background-color: #1c1c1c;	
+	border-color: #333;
+}
+a.sidemenu-item, a.sidemenu-item p {
+	color: #EEE;
+}
+a.sidemenu-item:active, a.sidemenu-item:hover{
+	background-color: #000!important;
+	border-color: #222!important;
+}
+.sidemenu-item span{
+	color: #33dbe2;
+}
+
+.sidemenu-avatar {
+	width: 140px;
+	border-radius: 140px;
+	border: solid 6px #333;
+	margin: 25px 0;
+}
+
+.title{
+	color: #33dbe2!important;
+}
+
+.custom-combobox{
+	width: 100%;
+	background-color: rgba(255,255,255,0.1);
+	border-radius: 4px;
+	padding-left: 5px;
+	color: #FFF;
+}
+.custom-combobox-icon{
+	font-size: 26px;
+}
+.custom-combobox-label{
+	font-size: 18px;
+	margin-top: 4px;
+/*	margin-left: 15px;
+	margin-top: 3px;
+	float: left;*/
+}
+.custom-combobox-drop-icon{
+	font-size: 26px;
+}
+
+.content {
+	background-image: url(../img/bg.jpg);
+	background-position: top center;
+	background-size: cover;
+}
+.content-title{
+	color: #FFF;
+	margin-bottom: 40px;
+}
+.content-title span{
+	font-size: 50px;
+	color: #33dbe2;
+}
+.content-title h1{
+	margin: 5px 0;
+	font-size: 26px;
+	color: #FFF;
+}
+.content-title p{
+	font-size: 16px;
+	color: #FFF;
+}
+
+.custom-input{
+	width: 100%!important;
+	padding: 10px;
+	background-color: rgba(255, 255, 255, 0.1);
+	color: white;
+	resize: none;
+	border-radius: 4px;
+	font-size: 18px;
+}
+
+.evento-dia, .evento-mes, .evento-ano {
+	color: #FFF;
+	font-weight: bold;
+}
+.evento-dia{
+	font-size: 58px;
+	margin-top: 18px;
+}
+.evento-mes{
+	text-transform: uppercase;
+	font-size: 24px;
+	margin-bottom: 10px;
+}
+.evento-ano{
+	font-size: 40px;
+}
+
+.btn-rounded{
+	width: 80px;
+	height: 80px;
+	border-radius: 80px;
+	border: 3px #FFF solid;
+	background-color: #33dbe2;
+	font-size: 50px;
+	font-weight: bold;
+}
+.btn-rounded span{
+	color: #FFF;
+
+}
+
+.btn-fixed-bottom-right{
+	position: absolute!important;
+	right: 0;
+	bottom: 0;
+	margin: 0 20px 20px 0;
+}
+
+.input-search{
+	background-color: rgba(255, 255, 255, 0.2);
+	padding-left: 10px!important;
+	height: 45px!important;
+	border-radius: 4px;
+	font-weight: bold;
+	color: #FFF!important;
+}
+.input-search-icon {
+	font-size: 26px;
+	color: #33dbe2;
+	position: absolute;
+	right:0;
+	top: 0;
+	margin-right: 20px;
+	margin-top: 20px;
+}
+.back-button {
+	color: #33dbe2!important;
+}
