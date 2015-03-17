@@ -5,6 +5,12 @@
         </button>
     </ion-nav-buttons>
 	<ion-content class="padding">
+
+		<ng-include
+			src="'templates/elements/communication-error.html'"
+			ng-show="communicationError">
+		</ng-include>
+
 		<div class="content-title text-center">			
 <!-- 			<span class="icon ion-email"></span>
 			<h1>Contato</h1> -->

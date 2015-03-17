@@ -6,8 +6,15 @@
 			<span class="icon ion-social-facebook"></span> Entrar com Facebook
 		</button>
 
+		<div ng-show="loginError">
+			Ocorreu um erro ao tentar efetuar o login
+		</div>
+		<div ng-show="networkError">
+			Sem conexão com a Internet
+		</div>
+
 		<input type="text" placeholder="ID" style="width: 100%;" ng-model="userId">
-		<button type="button" class="button button-royal button-full" ng-click="doLogin(userId)">Logar com o id acima</button>
+		<button type="button" class="button button-royal button-full" ng-click="doLoginTeste(userId)">Logar com o id acima</button>
 	
 	</ion-content>
 </ion-view>

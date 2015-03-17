@@ -14,15 +14,18 @@
     <ion-side-menu side="left">
         <ion-content>
             <div class="text-center sidemenu-header">
-                <img src="img/checkin-perfis/natalie.jpg" class="sidemenu-avatar">
+                <img ng-src="https://graph.facebook.com/{{me.facebook_uid}}/picture?width=140&height=140" class="sidemenu-avatar">
             </div>
             <ion-list class="sidemenu-list">
+                <a class="item">
+                    {{me.name}}
+                </a>
                 <a class="item item-icon-left sidemenu-item menu-close" href="#/app/eventos">
                     <span class="icon ion-android-calendar"></span>
                     <strong>Eventos</strong>
                     <p>Os eventos da semana</p>
                 </a>
-                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/checkin">
+                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/checkin-tabs">
                     <span class="icon ion-ios-location"></span>
                     <strong>Check-in</strong>
                     <p>Os eventos da semana</p>
@@ -44,7 +47,10 @@
                 </a>
             </ion-list>
 
-            <a href="#/login" class="button button-icon icon ion-power menu-close pull-right" style="color: #CCC;"></a>
+    
+            <div style="margin: 15px 0;">
+                <a href="#/logout" class="button button-icon icon ion-power menu-close pull-right" style="color: #CCC;"></a>
+            </div>
 
         </ion-content>
     </ion-side-menu>

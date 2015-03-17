@@ -1,6 +1,15 @@
 <ion-view title="{{profile.name}}" class="content">
 	<ion-content class="text-center">
-		<img ng-src="img/checkin-perfis/{{profile.image}}" width="100%">
-		<button class="button button-assertive">Curtir</button>
+		<img ng-src="img/checkin-perfis/katy.jpg" class="ig-kelvin" width="100%">
+		<img src="img/like.png" style="width: 60px;top: 0; margin: 5px 0 0 5px;position: absolute;" ng-show="profile.hasLike">
+		<div ng-show="loading">
+			Carregando...
+		</div>
+		<div ng-if="!loading">
+			<h2 ng-show="heartMe && !thatIHeart">Curtiu você</h2>
+			<h2 ng-show="thatIHeart && !heartMe">Você curtiu</h2>
+			<h2 ng-show="heartMe && thatIHeart">Combinaram</h2>
+			<button class="button button-positive" ng-show="hasBtnHeart" ng-click="addHeartPreflight()">Curtir</button>
+		</div>
 	</ion-content>
 </ion-view>

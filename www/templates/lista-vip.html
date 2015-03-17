@@ -7,6 +7,11 @@
         </button>
     </ion-nav-buttons>
 	<ion-content class="content">
+		<ng-include
+			src="'templates/elements/communication-error.html'"
+			ng-show="communicationError">
+		</ng-include>
+		
 		<ion-refresher
 			pulling-text="Puxe para atualizar..."
 			on-refresh="refreshListas()">
@@ -16,7 +21,7 @@
 		</div>
 
 		<ion-list>
-			<ion-item ng-repeat="lista in listas" ng-click="openModal(lista)">
+			<ion-item collection-repeat="lista in listas" ng-click="openModal(lista)">
 				{{lista.name}}
 			</ion-item>
 		</ion-list>

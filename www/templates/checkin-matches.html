@@ -1,0 +1,33 @@
+<ion-view title="Combinações" class="">
+	<ion-content class="content">
+		<ion-refresher
+			ng-if="!loading"
+			pulling-text="Puxe para atualizar..."
+			on-refresh="loadPerfis()">
+		</ion-refresher>
+
+		<div ng-show="loading">
+			<ion-spinner></ion-spinned> Carregando...
+		</div>
+		
+		<ion-list>
+			<ion-item
+				href="#/app/checkin-perfil/{{perfil.id}}/{{eventId}}"
+				ng-repeat="perfil in perfis | orderBy:'name'" class="item-avatar repeated-item">
+				<img ng-src="img/checkin-perfis/katy.jpg">
+				<h2>{{perfil.name}}</h2>
+				<p>12 minutos atrás</p>
+			</ion-item>
+		</ion-list>
+
+		<div ng-show="perfis.length === 0">
+			<h1 style="color: #FFF;">Você ainda não tem combinações</h1>
+		</div>
+
+	</ion-content>
+
+	<button type="button" class="btn-rounded btn-fixed-bottom-right" style="font-size: 36px;" ng-click="doCheckin()" ng-show="showCheckinButton">
+		<span class="icon ion-ios-location"></span>
+	</button>
+
+</ion-view>

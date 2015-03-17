@@ -1,6 +1,9 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppController', function($scope, $ionicModal, $timeout, Me) {
+	$scope.$on('$ionicView.beforeEnter', function(){
+		$scope.me = Me.data;
+	});
 })
 .controller('LoginController', function(
 	$scope,
@@ -11,44 +14,76 @@ angular.module('starter.controllers', [])
 	$state,
 	Evento,
 	Me,
-	WEBSERVICE_URL
+	WEBSERVICE_URL,
+	Network,
+	localStorageService
 ){
 	$scope.userId = null;
 
-	$scope.doLogin = function(id){
+	$scope.loginError = false;
+	$scope.networkError = false;
+
+	$scope.doLoginTeste = function(id){
 		$ionicLoading.show({
 			template: 'Entrando...'
 		});
 
-		Me.doLogin(id)
+		Me.doLoginTeste(id)
 			.then(function(result){
-				$ionicLoading.hide();
-				if (result) {
-					$state.go('dispatcher');
-				} else {
-					$ionicLoading.hide();
-					$ionicLoading.show({
-						template: 'Usuário não existe',
-						noBackdrop: true,
-						duration: 2000
-					});
-				}
+				Me.data = result;
+				localStorageService.set('Me', Me.data);
+				$state.go('app.eventos');
 			}, function(err){
+				$scope.networkError = true;
+			})
+			.finally(function(){
 				$ionicLoading.hide();
+			});
+	};
+
+	$scope.doLogin = function(){
+		$ionicLoading.show({
+			template: 'Entrando...'
+		});
+
+		Network.check()
+			.then(function(result){
+				Me.doLogin()
+					.then(function(result){
+						if (result) {
+							Me.data = result;
+							localStorageService.set('Me', Me.data);
+							$state.go('app.eventos');
+						} else {
+							$scope.loginError = true;
+						}
+					}, function(err){
+						$scope.loginError = true;
+					})
+					.finally(function(){
+						$ionicLoading.hide();
+					});
+				
+			}, function(err){
+				$scope.networkError = true;
 			});
 	};
 })
 
 .controller('ListaVipController', function(
-	$scope,
-	Lista,
-	$ionicPopup,
-	$ionicLoading,
-	$timeout,
+	$cordovaToast,
 	$ionicActionSheet,
+	$ionicLoading,
 	$ionicModal,
-	Evento
+	$ionicPopup,
+	$scope,
+	$timeout,
+	Evento,
+	Lista,
+	Network
 ) {
+
+	$scope.communicationError = false;
 
 	$scope.listas = [];
 	$scope.currentList = null;
@@ -73,128 +108,80 @@ angular.module('starter.controllers', [])
 	};
 
 	$scope.send = function(){
-		$ionicLoading.show({
-			template: 'Enviando...'
-		});
 
-		Evento.addViplistSubscription({event_id: $scope.currentList.id})
+		Network.check()
 			.then(function(result){
-				Evento.getLists()
-					.then(function(result){
-						$scope.listas = result;
-					}, function(err){
-						
-					})
-					.finally(function(){
-						$scope.closeModal();
-						$ionicLoading.hide();
-
-						$ionicLoading.show({
-							template: 'Sua inscrição feita com sucesso!',
-							noBackdrop: true,
-							duration: 2000
+				$ionicLoading.show({
+					template: 'Enviando...'
+				});
+				$timeout(function(){
+					Evento.addViplistSubscription({event_id: $scope.currentList.id})
+						.then(function(result){
+							$cordovaToast.show('Inscrição feita com sucesso!', 'long', 'bottom');
+							$scope.closeModal();
+						}, function(err){
+							if (err.code == 403) {
+								var alertPopup = $ionicPopup.alert({
+									title: 'Aviso!',
+									template: err.message
+								});
+								alertPopup.then(function(res) {
+									$scope.closeModal();
+								});
+							} else {
+								$scope.closeModal();
+							}
+						}).finally(function(){
+							$ionicLoading.hide();
 						});
-					});
-			}, function(err, tey){
-				$ionicLoading.hide();
-				if (err.code == 403) {
-					var alertPopup = $ionicPopup.alert({
-						title: 'Aviso!',
-						template: err.message
-					});
-					alertPopup.then(function(res) {
-						$scope.closeModal();
-					});
-				} else {
-					$scope.closeModal();
-				}
+				}, 3000);
+			}, function(err){
+				$cordovaToast.show('Erro na comunicação com o servidor!', 'long', 'bottom');
 			});
 	};
 
 
 	$scope.getMoreListas = function(){
-		Evento.getLists($scope.page)
+		Network.check()
 			.then(function(result){
-				$scope.listas = result;
+				Evento.getLists($scope.page)
+					.then(function(result){
+						$scope.listas = result;
+						$scope.communicationError = false;
+					}, function(err){
+						$scope.communicationError = true;
+					})
+					.finally(function(){
+						$scope.$broadcast('scroll.infiniteScrollComplete');
+						$scope.moreDataCanBeLoaded = false;
+					});
 			}, function(err){
-				
-			})
-			.finally(function(){
+				$scope.communicationError = true;
 				$scope.$broadcast('scroll.infiniteScrollComplete');
-				$scope.moreDataCanBeLoaded = false;
 			});
 	};
 
 	$scope.refreshListas = function(){
-		$scope.page = 0;
-		Evento.getLists($scope.page)
+		Network.check()
 			.then(function(result){
-				$scope.listas = result;
+				$timeout(function(){
+					$scope.page = 0;
+					Evento.getLists($scope.page)
+						.then(function(result){
+							$scope.listas = result;
+							$scope.communicationError = false;
+						}, function(err){
+							$scope.communicationError = true;
+						})
+						.finally(function(){
+							$scope.$broadcast('scroll.refreshComplete');
+						});
+				}, 3000);
 			}, function(err){
-				
-			})
-			.finally(function(){
+				$scope.communicationError = true;
 				$scope.$broadcast('scroll.refreshComplete');
 			});
 	};
-
-	// $scope.getListas();
-
-	// $scope.refreshListas = function(){
-	// 	Lista.get()
-	// 		.then(function(result){
-	// 			$scope.listas = result;
-	// 		}, function(err){
-				
-	// 		})
-	// 		.finally(function(){
-	// 			console.log('here');
-	// 			$scope.$broadcast('scroll.refreshComplete');
-	// 		});
-	// };
-
-
-	
-
-	// $scope.eventos = Lista.eventos;
-	// var comboEmpty = {id: null, name: 'Escolha o evento:'};
-	// $scope.eventoAtual = comboEmpty;
-	// $scope.datapopup = {};
-
-	// $scope.showPopup = function(){
-	// 	var myPopup = $ionicPopup.show({
-	// 		template: '<ion-list><label class="item item-radio" ng-repeat="evento in eventos"><input type="radio" name="group" ng-model="datapopup.eventoAtual" ng-value="{{evento}}"><div class="item-content">{{evento.name}}</div><i class="radio-icon ion-checkmark"></i></label></ion-list>',
-	// 		title: 'Escolha o evento',
-	// 		scope: $scope,
-	// 		buttons: [
-	// 			{
-	// 				text: 'Escolher',
-	// 				type: 'button-positive',
-	// 				onTap: function(e) {
-	// 					$scope.eventoAtual = $scope.datapopup.eventoAtual;
-	// 					console.log($scope.eventoAtual);
-	// 					return true;
-	// 				}
-	// 			}
-	// 		]
-	// 	});
-
-	// 	myPopup.then(function(res) {
-	// 		console.log('Tapped!', res);
-	// 	});
-	// };
-
-	// $scope.save = function(){
-	// 	$ionicLoading.show({
-	// 		template: 'Enviando...'
-	// 	});
-
-	// 	$timeout(function(){
-	// 		$scope.eventoAtual = comboEmpty;
-	// 		$ionicLoading.hide();
-	// 	}, 3000);
-	// };
-
 })
 .controller('EventosController', function(
 	$scope,
@@ -291,73 +278,364 @@ angular.module('starter.controllers', [])
 	$timeout,
 	localStorageService,
 	Evento,
-	Me
+	Me,
+	$ionicPlatform,
+	PRODUCTION,
+	PUSH_NOTIFICATION_SENDER_ID,
+	$cordovaNetwork
 ){
+	
 	$timeout(function(){
-		Me.data = localStorageService.get('Me');
-		if (Me.data) {
-			$state.go('app.checkin');	
+		var me = localStorageService.get('Me');
+		if (me) {
+			Me.data = me;
+			$state.go('app.eventos');
 		} else {
 			$state.go('login');
 		}
-	}, 1000);
+		
+	}, 500);
+
 })
-.controller('CheckinController', function(
-	$ionicLoading,
-	$scope,
+.controller('CheckinMatchesController', function(
+	$stateParams,
+	$interval,
 	$timeout,
-	CheckinPerfil,
-	Evento
-) {
+	localStorageService,
+	Evento,
+	Me,
+	Checkin,
+	$scope,
+	Util
+){
 
-	$scope.page = 0;
-	$scope.moreDataCanBeLoaded = true;
-	$scope.perfis = [];
-	$scope.hasEvent = false;
-	$scope.currentEvent = null;
+	$scope.eventId = $stateParams.eventId;
+	var interval = null;
 
-	$scope.showCheckinButton = true;
+	$scope.$on('$ionicView.beforeEnter', function(){
+		$scope.loading = true;
+		$scope.perfis = Checkin.matches;
+		$scope.loadPerfis();
+	});
 
-	$scope.loading = true;
-	
-	$scope.$on('$ionicView.afterEnter', function(){
-		Evento.getCurrent()
+	$scope.$on('$ionicView.beforeLeave', function(){
+		$scope.stopInterval();
+	});
+
+	$scope.startInterval = function(){
+		$scope.stopInterval();
+		console.log('Iniciando timer matches');
+		interval = $interval(function(){
+			$scope.loadPerfis();
+		}, 1000);
+	};
+
+	$scope.stopInterval = function(){
+		console.log('Parando timer matches');
+		$interval.cancel(interval);
+	};
+
+	$scope.loadPerfis = function(){
+		$scope.stopInterval();
+		Checkin.getMatches($stateParams.eventId, 0)
 			.then(function(result){
 				if (result) {
-					$scope.currentEvent = result;
-					$scope.hasEvent = true;
-					$scope.perfis = Evento.checkinPerfis;
-					$scope.showCheckinButton = true;
+					$scope.perfis = Checkin.matches;
+					$timeout(function(){
+						$scope.loadPerfis();	
+					}, 1000);
 				} else {
-					$scope.showCheckinButton = false;
+					$scope.loading = false;
+					$scope.$broadcast('scroll.refreshComplete');
+					$scope.startInterval();
 				}
 			}, function(err){
 				
 			})
 			.finally(function(){
-				$scope.loading = false;
+
 			});
-		// var now = moment().format('YYYY-MM-DD HH:mm:ss');
-		// var expireDate = Evento.currentEventExpireDate;
-		// console.log('Aqui');
-		// console.log(expireDate);
-		// if (expireDate) {
-		// 	if(expireDate <= now){
-		// 		console.log('Espirou');
-		// 	} else {
-		// 		console.log('Não espirou');
-		// 	}
-		// } else {
-		// 	console.log('Espirou');
-		// }
+	};
+})
+.controller('CheckinMyHeartController', function(
+	$stateParams,
+	$timeout,
+	localStorageService,
+	Evento,
+	$interval,
+	Me,
+	Checkin,
+	$scope,
+	Util
+){
+
+	
+	$scope.eventId = $stateParams.eventId;
+
+	$scope.$on('$ionicView.beforeEnter', function(){
+		$scope.loading = true;
+		$scope.perfis = Checkin.pleopleThatIHeart;
+		$scope.loadPerfis();
 	});
+
+	var interval = null;
+	$scope.startInterval = function(){
+		$scope.stopInterval();
+		console.log('Iniciando timer matches');
+		interval = $interval(function(){
+			$scope.loadPerfis();
+		}, 1000);
+	};
+
+	$scope.stopInterval = function(){
+		console.log('Parando timer matches');
+		$interval.cancel(interval);
+	};
+
+	$scope.loadPerfis = function(){
+		Checkin.getPeopleThatIHeart($scope.eventId, 0)
+			.then(function(result){
+				if (result) {
+					$scope.perfis = Checkin.pleopleThatIHeart;
+					$timeout(function(){
+						$scope.loadPerfis();	
+					}, 1000);
+				} else {
+					$scope.loading = false;
+					$scope.$broadcast('scroll.refreshComplete');
+					$scope.startInterval();
+				}
+			}, function(err){
+				
+			})
+			.finally(function(){
+
+			});
+	};
+})
+.controller('CheckinHeartMeController', function(
+	$stateParams,
+	$timeout,
+	$interval,
+	localStorageService,
+	Evento,
+	Me,
+	Checkin,
+	$scope,
+	Util
+){
+
+	$scope.eventId = $stateParams.eventId;
+
+	$scope.$on('$ionicView.beforeEnter', function(){
+		$scope.loading = true;
+		$scope.perfis = Checkin.peopleHeartMe;
+		$scope.loadPerfis();
+	});
+
+	var interval = null;
+	$scope.startInterval = function(){
+		$scope.stopInterval();
+		console.log('Iniciando timer matches');
+		interval = $interval(function(){
+			$scope.loadPerfis();
+		}, 1000);
+	};
+
+	$scope.stopInterval = function(){
+		console.log('Parando timer matches');
+		$interval.cancel(interval);
+	};
+
+	$scope.loadPerfis = function(){
+		Checkin.getPeopleHeartMe($scope.eventId, 1)
+			.then(function(result){
+				if (result) {
+					$scope.perfis = Checkin.peopleHeartMe;
+					$timeout(function(){
+						$scope.loadPerfis();	
+					}, 1000);
+				} else {
+					$scope.loading = false;
+					$scope.$broadcast('scroll.refreshComplete');
+					$scope.startInterval();
+				}
+			}, function(err){
+				
+			})
+			.finally(function(){
+
+			});
+	};
+})
+.controller('CheckinBuscaController', function(
+	$interval,
+	$ionicLoading,
+	$ionicScrollDelegate,
+	$scope,
+	$stateParams,
+	$timeout,
+	Checkin,
+	Evento
+) {
+	
+	$scope.perfis = Checkin.perfis;
+
+	$scope.$on('$ionicView.beforeEnter', function(){
+		$scope.perfis = Checkin.perfis;
+		$scope.getNewPerfis('first');
+	});
+
+	$scope.getNewPerfis = function(event){
+		$scope.loading = true;
+		Checkin.getAll($stateParams.eventId)
+			.then(function(result){
+				if (result) {
+					$scope.perfis = Checkin.perfis;
+
+					$timeout(function(){
+						$scope.getNewPerfis(event);
+					}, 100);
+				} else {
+					$scope.loading = false;
+				}
+			}, function(err){
+				
+			})
+			.finally(function(){
+			});
+	};
+
+})
+.controller('CheckinTabsController', function(
+	$ionicLoading,
+	$scope,
+	$timeout,
+	$interval,
+	Checkin,
+	Evento,
+	$ionicScrollDelegate,
+	$filter
+) {
+	/**
+	 * Diz qual é o evento atual da tela de checkins
+	 * @type {Array Object}
+	 */
+	$scope.currentEvent = null;
+
+	$scope.alertNoEvents = false;
+
+	$scope.hasNewProfiles = false;
+
+	$scope.showCheckinButton = false;
+
+	$scope.loadingNewData = true;
+	
+	var timerRefreshData = null;
+
+	$scope.$on('$ionicView.beforeEnter', function(){
+		$scope.perfis = Checkin.perfis;
+		$scope.loadingNewData = true;
+
+		$scope.refreshEvent('first');
+	});
+	$scope.$on('$ionicView.beforeLeave', function(){
+		console.log('Saindo');
+		$scope.stopInterval();
+	});
+	$scope.getNewPerfis = function(event){
+		Checkin.getAll($scope.currentEvent.id)
+			.then(function(result){
+				if (result) {
+					if (event == 'first') {
+						$scope.perfis = Checkin.perfis;
+					} else if(event == 'timer') {
+						$scope.hasNewProfiles = true;
+					}
+					
+					$timeout(function(){
+						$scope.getNewPerfis(event);
+					}, 100);
+				} else {
+					$scope.loadingNewData = false;
+					if (event == 'first') {
+						$scope.startInterval();
+					} else if (event == 'pullToRefresh'){
+						$scope.$broadcast('scroll.refreshComplete');
+						$scope.startInterval();
+					} else {
+						console.log(result);
+					}
+				}
+			}, function(err){
+				
+			})
+			.finally(function(){
+			});
+	};
+
+	$scope.refreshEvent = function(event){
+		Evento.getCurrent()
+			.then(function(result){
+				if (!result) {
+					$scope.currentEvent = null;
+					Evento.checkinPerfis = [];
+					$scope.perfis = [];
+					$scope.loadingNewData = false;
+					$scope.alertNoEvents = true;
+				} else {
+					$scope.currentEvent = result;
+				}
+
+				if ($scope.currentEvent) {
+					if ($scope.currentEvent.id != result.id) {
+						Evento.checkinPerfis = [];
+						$scope.perfis = [];
+					}
+					$scope.getNewPerfis(event);
+					if ($scope.currentEvent.id != Evento.checkinInfoEventId) {
+						$scope.showCheckinButton = true;
+					}
+				}
+			}, function(err){
+				
+			})
+			.finally(function(){
+			});
+	};
+	$scope.startInterval = function(){
+		console.log('Começar interval');
+		timerRefreshData = $interval(function(){
+			console.log('Rolando timer...');
+			$scope.refreshEvent('timer');
+		}, 1000);
+	};
+
+	$scope.stopInterval = function(){
+		console.log('Parando interval');
+		$interval.cancel(timerRefreshData);
+		timerRefreshData = null;
+	};
+
+	$scope.refreshProfiles = function(){
+		$ionicScrollDelegate.scrollTop(true);
+		$scope.perfis = [];
+		$scope.perfis = Checkin.perfis;
+		$scope.hasNewProfiles = false;
+	};
+
+	$scope.doPullToRefresh = function(){
+		$scope.stopInterval();
+		$scope.refreshEvent('pullToRefresh');
+	};
 
 	$scope.doCheckin = function(){
 		$ionicLoading.show({
 			template: 'Efetuando checkin em '+Evento.currentEvent.name+'...'
 		});
-		Evento.doCheckin()
+		Evento.doCheckin($scope.currentEvent.id)
 			.then(function(result){
+				$scope.showCheckinButton = false;
 				$ionicLoading.hide();
 				$ionicLoading.show({
 					template: 'Checkin feito com sucesso',
@@ -373,64 +651,129 @@ angular.module('starter.controllers', [])
 				});
 			});
 	};
+  
+})
 
-	$scope.loadMore = function(){
-		CheckinPerfil.getAll($scope.currentEvent.id, $scope.page)
+.controller('CheckinPerfilController', function(
+	$ionicLoading,
+	$scope,
+	$stateParams,
+	$ionicPopup,
+	Checkin,
+	$q
+) {
+
+	var id = $stateParams.id;
+	var event_id = $stateParams.eventId;
+    $scope.profile = Checkin.get(id);
+
+	$scope.$on('$ionicView.beforeEnter', function(){
+		$scope.heartMe = false;
+		$scope.thatIHeart = false;
+		$scope.hasBtnHeart = false;
+
+		$scope.loading = true;
+		$scope.getStatus();
+	});
+
+	$scope.addHeartPreflight = function(){
+		$ionicLoading.show({template: 'Salvando o seu coração...'});
+		Checkin.addHeartPreflight(id, event_id)
 			.then(function(result){
-				if ($scope.perfis) {
-					var concat = $scope.perfis.concat(result);
-					$scope.perfis = concat;
+				console.log(result);
+				if (parseInt(result) == 1) {
+					$ionicLoading.hide();
+					$scope.showPopup();
 				} else {
-					$scope.perfis = result;	
-				}
-				
-				if (!result) {
-					$scope.moreDataCanBeLoaded = false;
+					$scope.addHeart();
 				}
 			}, function(err){
 				
 			})
 			.finally(function(){
-				$scope.page++;
-				$scope.$broadcast('scroll.infiniteScrollComplete');
+				
 			});
 	};
 
-	// $timeout(function(){
-	// 	Evento.getCurrent()
-	// 		.then(function(result){
-				
-	// 		}, function(err){
-				
-	// 		})
-	// 		.finally(function(){
-	// 			$scope.loading = false;
-	// 		});
-	// }, 2000);
-
-	// $timeout(function(){
-	// 	$scope.perfis = CheckinPerfil.perfis;
-	// 	$scope.$broadcast('scroll.infiniteScrollComplete');
-	// 	$scope.moreDataCanBeLoaded = false;
-	// }, 1000);
-
-	// $scope.refreshPerfis = function(){
-	// 	$timeout(function(){
-	// 		$scope.$broadcast('scroll.refreshComplete');
-	// 	}, 1000);
+	$scope.data = {};
+	$scope.data.message = null;
+	$scope.messageError = false;
+	$scope.showPopup = function(){
 		
-	// };
-    
-})
+		var myPopup = $ionicPopup.show({
+			templateUrl: 'templates/popup/add-heart.html',
+			title: 'Enviar mensagem!',
+			subTitle: 'Esta pessoa também te curtiu. você deixar uma mensagem para ela, bem joia ok?',
+			scope: $scope,
+			buttons: [
+				{
+					text: '<b>Não enviar</b>',
+					type: 'button-assertive',
+					onTap: function(e) {
+						$scope.addHeart(false);
+					}
+				},
+				{
+					text: '<b>Enviar</b>',
+					type: 'button-positive',
+					onTap: function(e) {
+						if (!$scope.data.message) {
+							$scope.messageError = true;
+							e.preventDefault();
+						} else {
+							$scope.addHeart(true);		
+						}
+					}
+				}
+			]
+		});
+	};
 
-.controller('CheckinPerfilController', function(
-	$scope,
-	$stateParams,
-	CheckinPerfil
-) {
+	$scope.addHeart = function(sendMessage){
 
-	var id = $stateParams.id;
-    $scope.profile = CheckinPerfil.get(id);
+		if (!sendMessage) {
+			$scope.data.message = null;
+		}
+
+		$ionicLoading.show({template: 'Salvando o seu coração...'});
+		
+		Checkin.addHeart({event_id: event_id, profile_id: id, message: $scope.data.message})
+			.then(function(result){
+				$scope.thatIHeart = true;
+				$scope.hasBtnHeart = false;
+			}, function(err){
+				
+			})
+			.finally(function(){
+				$ionicLoading.hide();
+			});
+	};
+
+	$scope.getStatus = function(){
+		Checkin.getProfileStatus(id, event_id)
+			.then(function(result){
+				if (!result) {
+					$scope.hasBtnHeart = true;
+				} else {
+					if (result.length == 1) {
+						if (result[0].user_id1 == id) {
+							$scope.heartMe = true;
+							$scope.hasBtnHeart = true;
+						} else {
+							$scope.thatIHeart = true;
+						}
+					} else {
+						$scope.heartMe = true;
+						$scope.thatIHeart = true;
+					}
+				}
+			}, function(err){
+				
+			})
+			.finally(function(){
+				$scope.loading = false;
+			});
+	};
 })
 .controller('InstitucionalController', function($scope, $ionicPosition) {
     
@@ -439,32 +782,52 @@ angular.module('starter.controllers', [])
 	$scope,
 	$ionicLoading,
 	$timeout,
-	Contato
+	Contato,
+	Network,
+	$cordovaToast
 ) {
 
 	$scope.mensagem = null;
+	$scope.communicationError = false;
 
 	$scope.save = function(){
-		$ionicLoading.show({
-			template: 'Enviando contato...'
-		});
 
-		$timeout(function(){
-			Contato.add({mensagem: $scope.mensagem})
-			.then(function(result){
-				
-			}, function(err){
-				
+		Network.check()
+			.then(function(){
+				$scope.communicationError = false;
+				$ionicLoading.show({
+					template: 'Enviando contato...'
+				});
+				Contato.add({mensagem: $scope.mensagem})
+					.then(function(result){
+						$scope.mensagem = null;
+						$cordovaToast.show('Contato enviado, obrigado.', 'long', 'bottom');
+					}, function(err){
+						$scope.communicationError = true;		
+					})
+					.finally(function(){
+						$ionicLoading.hide();
+					});
+			}, function(){
+				$scope.communicationError = true;
 			})
 			.finally(function(){
-				$scope.mensagem = null;
-				$ionicLoading.hide();
-				$ionicLoading.show({
-					template: 'Contato enviado, obrigado',
-					noBackdrop: true,
-					duration: 2000				
-				});
-			});	
-		}, 2000);
+				
+			});
 	};
+})
+.controller('LogoutController', function(
+	localStorageService,
+	$state,
+	$ionicLoading,
+	Me,
+	$timeout
+) {
+	$timeout(function(){
+		$ionicLoading.show({template: 'Saindo...'});
+		Me.data = null;
+		localStorageService.clearAll();
+		$ionicLoading.hide();
+		$state.go('login');
+	}, 3000);
 });
