@@ -1,0 +1,34 @@
+<ion-view title="Me curtiram" cache-view="false">
+	<ion-content class="content">
+		<!-- Refresher só fica habilitado quando não está fazendo o load -->
+		<ion-refresher
+			ng-if="!loading"
+			pulling-text="Puxe para atualizar..."
+			on-refresh="loadPerfis('refresher')">
+		</ion-refresher>
+		<!-- Loader que ocorre quando entra na view -->
+		<div ng-show="loading">
+			<ion-spinner></ion-spinned> Carregando...
+		</div>
+		<!-- Lista com os perfis -->
+		<ion-list>
+			<ion-item
+				href="#/app/checkin-perfil/{{perfil.id}}/{{eventId}}"
+				ng-repeat="perfil in perfis | orderBy:'name'" class="item-avatar item-icon-right">
+				<img ng-src="https://graph.facebook.com/{{perfil.facebook_uid}}/picture?width=80&height=80" class="image">
+				<h2>{{perfil.name}}</h2>
+				<p ng-if="perfil.created">
+					<span am-time-ago="perfil.created"></span>
+				</p>
+				<p ng-if="perfil.combination_created">
+					<span am-time-ago="perfil.combination_created"></span>
+				</p>
+				 <span class="icon ion-email-unread royal" ng-if="perfil.message"></span>
+			</ion-item>
+		</ion-list>
+		<!-- Mostra caso ninguem te curtiu ainda -->
+		<div ng-show="noPeople">
+			<h1 style="color: #FFF;">Nenhuma pessoa</h1>
+		</div>
+	</ion-content>
+</ion-view>

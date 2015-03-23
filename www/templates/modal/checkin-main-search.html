@@ -1,0 +1,26 @@
+<ion-modal-view>
+	<ion-header-bar>
+		<h1 class="title">Pesquisar</h1>
+		<button class="button button-clear button-positive" ng-click="closeModal()">Fechar</button>
+	</ion-header-bar>
+
+	<div class="bar bar-subheader">
+		<input type="text" ng-model="search" placeholder="Pesquisar por nome..." style="background-color: white; margin-top: -2px; width: 100%;padding-left: 25px;" id="input-search">
+		<span class="icon ion-search" style="position: absolute; top: 0; margin-top: 12px; font-size: 20px;color: #222;"></span>
+	</div>
+
+	<ion-content class="has-subheader">
+		<ion-list ng-if="search">
+			<a
+				class="item item-avatar repeated-item"
+				href="#/app/checkin-perfil/{{perfil.id}}/{{eventId}}"
+				ng-click="closeModal()"
+				ng-repeat="perfil in perfis | filter:search">
+
+				<img src="https://graph.facebook.com/{{perfil.facebook_uid}}/picture?width=80&height=80" class="image">
+				<h2>{{perfil.name}}</h2>
+				<p>Fez checkin <span am-time-ago="perfil.created"></span></p>
+			</a>
+		</ion-list>
+	</ion-content>
+</ion-modal-view>

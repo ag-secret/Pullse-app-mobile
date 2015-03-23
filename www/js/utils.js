@@ -1,8 +1,9 @@
 angular.module('starter.utils', [])
 .factory('Network', function(
-	$q,
-	$ionicPlatform,
 	$cordovaNetwork,
+	$cordovaToast,
+	$ionicPlatform,
+	$q,
 	PRODUCTION
 ){
  
@@ -17,6 +18,7 @@ angular.module('starter.utils', [])
 	            if (isOnline) {
 	            	defer.resolve();
 	            } else {
+	            	$cordovaToast.show('Sem conexão com a internet', 'long', 'bottom');
 	            	defer.reject();
 	            }
         	});

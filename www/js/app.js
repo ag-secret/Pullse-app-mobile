@@ -10,8 +10,14 @@ angular.module('starter', [
     'starter.models',
     'starter.utils',
     'LocalStorageModule',
-    'ngCordova'
+    'ngCordova',
+    'angularMoment',
+    'angular-preload-image'
 ])
+
+.config(function($ionicConfigProvider) {
+    // $ionicConfigProvider.views.transition('ios');
+})
 
 .constant('PRODUCTION', false)
 // .constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
@@ -21,11 +27,11 @@ angular.module('starter', [
 .constant('CLUB_ID', 1)
 
 .run(function(
+    $cordovaPush,
     $ionicPlatform,
     $rootScope,
-    PUSH_NOTIFICATION_SENDER_ID,
-    $cordovaPush,
-    PRODUCTION
+    PRODUCTION,
+    PUSH_NOTIFICATION_SENDER_ID
 ) {
 
     $ionicPlatform.ready(function() {
@@ -92,12 +98,12 @@ angular.module('starter', [
             }
         }
     })
-    .state('app.checkin-tabs', {
-        url: "/checkin-tabs",
+    .state('app.checkin-main', {
+        url: "/checkin-main",
         views: {
             'menuContent': {
-                templateUrl: "templates/checkin-tabs.html",
-                controller: 'CheckinTabsController'
+                templateUrl: "templates/checkin-main.html",
+                controller: 'CheckinMainController'
             }
         }
     })
@@ -128,30 +134,39 @@ angular.module('starter', [
             }
         }
     })
-    .state('app.checkin-heart-me', {
-        url: "/checkin-heart-me/:eventId",
+    .state('app.checkin-hearts', {
+        url: "/checkin-hearts/:eventId/:flag",
         views: {
             'menuContent': {
-                templateUrl: "templates/checkin-heart-me.html",
-                controller: 'CheckinHeartMeController'
+                templateUrl: "templates/checkin-hearts.html",
+                controller: 'CheckinHeartsController'
             }
         }
     })
-    .state('app.checkin-my-heart-', {
-        url: "/checkin-my-heart/:eventId",
+    .state('app.checkin-hearted-me', {
+        url: "/checkin-hearted-me/:eventId/:flag",
         views: {
             'menuContent': {
-                templateUrl: "templates/checkin-my-heart.html",
-                controller: 'CheckinMyHeartController'
+                templateUrl: "templates/checkin-hearted-me.html",
+                controller: 'CheckinHeartsController'
+            }
+        }
+    })
+    .state('app.checkin-that-i-hearted', {
+        url: "/checkin-that-i-hearted/:eventId/:flag",
+        views: {
+            'menuContent': {
+                templateUrl: "templates/checkin-that-i-hearted.html",
+                controller: 'CheckinHeartsController'
             }
         }
     })
     .state('app.checkin-matches', {
-        url: "/checkin-matches/:eventId",
+        url: "/checkin-matches/:eventId/:flag",
         views: {
             'menuContent': {
                 templateUrl: "templates/checkin-matches.html",
-                controller: 'CheckinMatchesController'
+                controller: 'CheckinHeartsController'
             }
         }
     })

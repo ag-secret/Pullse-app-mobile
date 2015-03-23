@@ -1,0 +1,72 @@
+<ion-view title="Checkin">
+	<ion-nav-buttons side="right">
+	    <button
+	    	ng-click="openModal()"
+	    	style="color: #33dbe2!important;"
+	    	class="button button-clear"
+	    	ng-if="currentEvent && perfis.length > 0">
+
+	    	<span class="icon ion-android-search"></span>
+	    </button>
+    </ion-nav-buttons>
+
+	<div
+		class="tabs tabs-top tabs-dark"
+		style="background-color: black; color: #33dbe2!important"
+		ng-show="currentEvent">
+		<a class="tab-item" href="#/app/checkin-hearted-me/{{currentEvent.id}}/1">
+			Me curtiram
+		</a>
+		<a class="tab-item" href="#/app/checkin-that-i-hearted/{{currentEvent.id}}/2">
+			Eu curti
+		</a>
+		<a class="tab-item" href="#/app/checkin-matches/{{currentEvent.id}}/3">
+			Combinações
+		</a>
+	</div>
+
+	<ion-content class="content" ng-class="{'has-subheader': currentEvent}">
+
+		<ion-refresher
+			ng-if="currentEvent && !loading"
+			pulling-text="Puxe para atualizar..."
+			on-refresh="doPullToRefresh()">
+		</ion-refresher>
+
+		<div ng-show="loading" style="color: white;">
+			<ion-spinner style="font-color: 30px;"></ion-spinned> Carregando...
+		</div>
+		<div ng-show="alertNoEvents">
+			<h1 style="color: white;">Não tem nenhum evento rolando agora...</h1>
+			<button type="button" class="button button-positive" ng-click="getCurrentEventByButton()">
+				Clique aqui para tentar buscar novamente
+			</button>
+		</div>
+
+ 		<div >
+			<div class="" style="margin-bottom: -5px;float: left; width: 33.333333%;" ng-repeat="perfil in perfis">
+				<a
+					href="#/app/checkin-perfil/{{perfil.id}}/{{currentEvent.id}}">
+					<img
+						ng-src="https://graph.facebook.com/{{perfil.facebook_uid}}/picture?width=140&height=140"
+						class="image"
+						style="width: 100%;height: auto!important;">
+				</a>
+			</div>
+			<div ng-show="currentEvent && alertNoProfiles">
+				<h2 style="color: white;">Ninguem fez checkin ainda</h2>
+			</div>
+		</div>
+
+	</ion-content>
+
+	<div ng-show="hasNewProfiles"
+		style="z-index: 999;background-color: red;color: white;position: absolute; left: 50%; margin-left: -50px; width: 100px; margin-top: 140px;" ng-click="refreshProfiles()">
+		Novas pessoas
+	</div>
+
+	<button type="button" class="btn-rounded btn-fixed-bottom-right" ng-click="doCheckin()" ng-if="showCheckinButton">
+		<span class="icon ion-ios-location"></span>
+	</button>
+
+</ion-view>

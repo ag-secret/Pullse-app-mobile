@@ -1,54 +1,31 @@
-<ion-view title="Lista Vip" cache-view="false">
-    <ion-nav-buttons side="right">
-        <button
-        	type="button"
-        	style="color: #FFF;" class="button button-clear icon-left ion-ios7-paperplane"
-        	ng-disabled="!listaSelected" ng-click="send()">
-        </button>
-    </ion-nav-buttons>
+<ion-view title="Lista Vip">
+	<!-- Início do conteúdo -->
 	<ion-content class="content">
-		<ng-include
-			src="'templates/elements/communication-error.html'"
-			ng-show="communicationError">
-		</ng-include>
-		
+		<!-- Loading do carregamento inicial -->
+		<div ng-show="loading">
+			<ion-spinner></ion-spinner> Carregando dados...
+		</div>
+		<!-- Refresher -->
 		<ion-refresher
+			ng-if="refresherEnabled"
 			pulling-text="Puxe para atualizar..."
-			on-refresh="refreshListas()">
+			on-refresh="getLists('refresh')">
 		</ion-refresher>
+		<!-- Sub-título da view -->
 		<div class="content-title text-center">			
 			<p>Envie o seu nome para a lista Feminina.</p>
 		</div>
-
+		<!-- Lista fazendo um loop na variavel listas -->
 		<ion-list>
 			<ion-item collection-repeat="lista in listas" ng-click="openModal(lista)">
 				{{lista.name}}
 			</ion-item>
 		</ion-list>
-
+		<!-- Scroll Infinito -->
 		<ion-infinite-scroll
 			ng-if="moreDataCanBeLoaded"
 			on-infinite="getMoreListas()">
 		</ion-infinite-scroll>
-
-		
-<!-- 		<div class="custom-combobox" ng-click="showPopup()">
-			<div class="row">
-				<div class="col col-10">
-					<span class="custom-combobox-icon icon ion-calendar"></span>
-				</div>
-				<div class="col">
-					<div class="custom-combobox-label">
-						{{ eventoAtual.name }}
-					</div>
-				</div>
-				<div class="col col-10">
-					<span class="custom-combobox-drop-icon icon ion-android-dropdown"></span>
-				</div>
-			</div>
-		</div> -->
-
-<!-- 		<button type="button" class="button button-stable button-full" ng-disabled="!selectedEvent" ng-click="save()">Enviar nome</button> -->
-
+	<!-- Fim do conteúdo -->
 	</ion-content>
 </ion-view>

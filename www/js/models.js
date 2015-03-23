@@ -171,16 +171,18 @@ angular.module('starter.models', [])
 })
 
 .factory('Checkin', function(
+	$http,
 	$q, 
 	Me,
-	$http,
+	Util,
 	WEBSERVICE_URL,
-	Util
+	localStorageService
 ){
 	return {
+		currentEvent: null,
 		perfis: [],
-		peopleHeartMe: [],
-		pleopleThatIHeart: [],
+		peopleHeartedMe: [],
+		peopleThatIHearted: [],
 		matches: [],
 		getGreaterId: function(){
 			var _this = this;
@@ -204,16 +206,29 @@ angular.module('starter.models', [])
 			}
 			return null;
 		},
+		/**
+		 * Pega todos os perfis que fizeram checkin no evento atual
+		 */
 		getAll: function(event_id){
 			var defer = $q.defer();
 			var _this = this;
 
-			// console.log(_this.perfis);
-			// console.log('LAST ID:');
-			// console.log(_this.getGreaterId());
+			$http({
+					method: 'GET',
+					url: WEBSERVICE_URL + '/checkins/getPerfis',
+					params: {
+						id: Me.data.id,
+						app_access_token: Me.data.app_access_token,
+						event_id: event_id,
+						last_id: Util.getGreaterField('checkinId', _this.perfis),
 
-			$http.get(WEBSERVICE_URL + '/checkins/getPerfis?id=' + Me.data.id + '&event_id=' + event_id + '&last_id=' + Util.getGreaterField('checkinId', _this.perfis))
+					}
+				})
 				.success(function(data){
+					/**
+					 * Se eu já tenho perfis no cache eu concateno os novos, caso contrario o 
+					 * valor atual dos perfis serão o que foi recebido por esta requisição
+					 */
 					if (_this.perfis) {
 						if (data) {
 							var concat = _this.perfis.concat(data);
@@ -229,43 +244,73 @@ angular.module('starter.models', [])
 				});
 			return defer.promise;
 		},
-		getPeopleHeartMe: function(event_id){
+		getHearts: function(event_id, flag){
 			var defer = $q.defer();
 			var _this = this;
-
-			$http.get(WEBSERVICE_URL + '/checkins/getPeopleHeart?me=1&id=' + Me.data.id + '&event_id=' + event_id + '&last_id=' + Util.getGreaterField('heart_id', _this.peopleHeartMe))
-				.success(function(data){
-					
-					if (_this.peopleHeartMe) {
-						if (data) {
-							var concat = _this.peopleHeartMe.concat(data);
-							_this.peopleHeartMe = concat;
-						}
-					} else {
-						_this.peopleHeartMe = data;
+			var arrayHearts = [];
+			var url = WEBSERVICE_URL + '/checkins/getHearts';
+			switch(flag){
+				case 1:
+					arrayHearts = _this.peopleHeartedMe;
+					break;
+				case 2:
+					arrayHearts = _this.peopleThatIHearted;
+					break;
+				case 3:
+					arrayHearts = _this.matches;
+					url = WEBSERVICE_URL + '/checkins/getCombinations';
+					break;
+			}
+			$http({
+					method: 'GET',
+					url: url,
+					params: {
+						id: Me.data.id,
+						app_access_token: Me.data.app_access_token,
+						/**
+						 * 'Quem me curtiu' e 'Quem eu curti' usam o mesmo método e esta flag
+						 * serve exatamente para o metodo saber qual dos dois ele deve retornar
+						 * @type {Number(0 ou 1)}
+						 */
+						flag: flag,
+						event_id: event_id,
+						last_id: Util.getGreaterField('heart_id', arrayHearts)
 					}
-					defer.resolve(data);
 				})
-				.error(function(){
-					defer.reject();
-				});
-			return defer.promise;
-		},
-		getPeopleThatIHeart: function(event_id){
-			var defer = $q.defer();
-			var _this = this;
-
-			$http.get(WEBSERVICE_URL + '/checkins/getPeopleHeart?me=0&id=' + Me.data.id + '&event_id=' + event_id + '&last_id=' + Util.getGreaterField('heart_id', _this.pleopleThatIHeart))
 				.success(function(data){
-					
-					if (_this.pleopleThatIHeart) {
-						if (data) {
-							var concat = _this.pleopleThatIHeart.concat(data);
-							_this.pleopleThatIHeart = concat;
-						}
-					} else {
-						_this.pleopleThatIHeart = data;
+					switch(flag){
+						case 1:
+							if (_this.peopleHeartedMe) {
+								if (data) {
+									var concatHeartedMe = _this.peopleHeartedMe.concat(data);
+									_this.peopleHeartedMe = concatHeartedMe;
+								}
+							} else {
+								_this.peopleHeartedMe = data;
+							}
+							break;
+						case 2:
+							if (_this.peopleThatIHearted) {
+								if (data) {
+									var concatThatIHearted = _this.peopleThatIHearted.concat(data);
+									_this.peopleThatIHearted = concatThatIHearted;
+								}
+							} else {
+								_this.peopleThatIHearted = data;
+							}
+							break;
+						case 3:
+							if (_this.matches) {
+								if (data) {
+									var concatMatches = _this.matches.concat(data);
+									_this.matches = concatMatches;
+								}
+							} else {
+								_this.matches = data;
+							}
+							break;
 					}
+
 					defer.resolve(data);
 				})
 				.error(function(){
@@ -299,7 +344,17 @@ angular.module('starter.models', [])
 			var defer = $q.defer();
 			var _this = this;
 
-			$http.get(WEBSERVICE_URL + '/checkins/getProfileStatus?id=' + Me.data.id + '&event_id='+event_id+'&profile_id=' + profile_id)
+			$http({
+					method: 'GET',
+					url: WEBSERVICE_URL + '/checkins/getProfileStatus',
+					params: {
+						id: Me.data.id,
+						app_access_token: Me.data.app_access_token,
+						profile_id: profile_id,
+						event_id: event_id
+					}
+
+				})
 				.success(function(data){
 					defer.resolve(data);
 				})
@@ -312,7 +367,16 @@ angular.module('starter.models', [])
 			var defer = $q.defer();
 			var _this = this;
 
-			$http.get(WEBSERVICE_URL + '/checkins/addHeartPreflight?id=' + Me.data.id + '&event_id='+event_id+'&profile_id=' + profile_id)
+			$http({
+					method: 'GET',
+					url: WEBSERVICE_URL + '/checkins/addHeartPreflight',
+					params: {
+						id: Me.data.id,
+						app_access_token: Me.data.app_access_token,
+						event_id: event_id,
+						profile_id: profile_id
+					}
+				})
 				.success(function(data){
 					defer.resolve(data);
 				})
@@ -325,7 +389,10 @@ angular.module('starter.models', [])
 			var _this = this;
 			var defer = $q.defer();
 
-			$http.post(WEBSERVICE_URL + '/checkins/addHeart?id=' + Me.data.id, data)
+			$http.post(
+					WEBSERVICE_URL + '/checkins/addHeart?id=' + Me.data.id + '&app_access_token='+Me.data.app_access_token,
+					data
+				)
 				.success(function(){
 					defer.resolve();
 				})
@@ -360,31 +427,38 @@ angular.module('starter.models', [])
 })
 
 .factory('Contato', function(
-	$q,
 	$http,
+	$q,
 	Me,
 	WEBSERVICE_URL
 ){
 	return {
+		/**
+		 * Envia o contato para o servidor
+		 * @param {message: string} data Contém a mensagem a ser enviada
+		 *                       
+		 */
 		add: function(data){
-			console.log(Me);
 			var defer = $q.defer();
 
-			$http.post(WEBSERVICE_URL + '/messages?id=' + Me.data.id + '&app_access_token=' + Me.data.app_access_token, data)
-				.success(function(){
-					defer.resolve();
-				})
-				.error(function(){
-					defer.reject();
-				});
-
+			$http.post(
+				WEBSERVICE_URL + '/messages?id=' + Me.data.id + '&app_access_token=' + Me.data.app_access_token,
+				data
+			)
+			.success(function(){
+				defer.resolve();
+			})
+			.error(function(){
+				defer.reject();
+			});
 			return defer.promise;
 		}
 	};
 })
 .factory('Evento', function(
-	$q,
+	$cordovaToast,
 	$http,
+	$q,
 	Me,
 	WEBSERVICE_URL,
 	localStorageService
@@ -399,6 +473,7 @@ angular.module('starter.models', [])
 
 			$http.get(WEBSERVICE_URL + '/events?id=' + Me.data.id + '&app_access_token=' + Me.data.app_access_token)
 				.success(function(data){
+					_this.events = data;
 					defer.resolve(data);
 				})
 				.error(function(){
@@ -414,7 +489,6 @@ angular.module('starter.models', [])
 					method: 'GET',
 					params: {
 						id: Me.data.id,
-						page: page,
 						app_access_token: Me.data.app_access_token,
 						
 					}
@@ -428,6 +502,10 @@ angular.module('starter.models', [])
 
 			return defer.promise;
 		},
+		/**
+		 * Faz a inscrição do usuario na lista
+		 * @param {Array Object} data - {event_id: number}
+		 */
 		addViplistSubscription: function(data){
 			var defer = $q.defer();
 
@@ -440,17 +518,25 @@ angular.module('starter.models', [])
 				});
 			return defer.promise;	
 		},
+		/**
+		 * Pega o evento que está ocorrendo neste exato momento,
+		 * é usado no checkin
+		 */
 		getCurrent: function(){
 			var defer = $q.defer();
 			var _this = this;
 
-			$http.get(WEBSERVICE_URL + '/events/getCurrent?id=' + Me.data.id)
-				.success(function(data){
-					defer.resolve(data);
-					if (data) {
-						_this.currentEvent = data;
-						// localStorageService.set('currentEventExpireDate', data.data_fim);
+			$http({
+					method: 'GET',
+					url: WEBSERVICE_URL + '/events/getCurrent',
+					params: {
+						id: Me.data.id,
+						app_access_token: Me.data.app_access_token,
 					}
+				})
+				.success(function(data){
+					_this.currentEvent = data;
+					defer.resolve(data);
 				})
 				.error(function(){
 					defer.reject();
@@ -461,12 +547,18 @@ angular.module('starter.models', [])
 		doCheckin: function(eventId){
 			var defer = $q.defer();
 			var _this = this;
-			$http.post(WEBSERVICE_URL + '/checkins?id=' + Me.data.id + '&event_id=' + eventId)
+
+			$http.post(
+				WEBSERVICE_URL + '/checkins?id=' + Me.data.id + '&app_access_token=' + Me.data.app_access_token,
+				{
+					event_id: eventId
+				})
 				.success(function(){
-					_this.checkinInfoEventId = eventId;
+					_this.currentEvent.hasCheckin = 1;
 					defer.resolve();
 				})
 				.error(function(){
+					$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 					defer.reject();
 				});
 

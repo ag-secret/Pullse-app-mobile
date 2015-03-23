@@ -1,22 +1,20 @@
 <ion-view title="Pesquisar pessoas" cache-view="true">
 	
 	<div class="bar bar-subheader">
-		<input type="text" ng-model="search" placeholder="Pesquisar por nome..." style="background-color: white; margin-top: -2px; width: 100%;padding-left: 25px;">
+		<input type="text" ng-model="search" placeholder="Pesquisar por nome..." style="background-color: white; margin-top: -2px; width: 100%;padding-left: 25px;" id="input-search">
 		<span class="icon ion-search" style="position: absolute; top: 0; margin-top: 12px; font-size: 20px;color: #222;"></span>
 	</div>
 
-	
-	<div ng-show="loading">
-		<ion-spinner></ion-spinned> Carregando...
-	</div>
-
 	<ion-content class="has-subheader">
+		<div ng-show="loading">
+			<ion-spinner></ion-spinned> Carregando...
+		</div>
 		<div ng-if="search">
 			<div class="list">
-				<a class="item item-avatar" href="#/app/checkin-perfil/{{perfil.id}}" collection-repeat="perfil in perfis | filter:search">
-					<img src="img/checkin-perfis/katy.jpg">
+				<a class="item item-avatar repeated-item" href="#/app/checkin-perfil/{{perfil.id}}/{{eventId}}" collection-repeat="perfil in perfis | filter:search">
+					<img src="https://graph.facebook.com/{{perfil.facebook_uid}}/picture?width=80&height=80" class="image">
 					<h2>{{perfil.name}}</h2>
-					<p>12 Minutos atrás</p>
+					<p>Fez checkin <span am-time-ago="perfil.created"></span></p>
 				</a>
 			</div>
 		</div>
