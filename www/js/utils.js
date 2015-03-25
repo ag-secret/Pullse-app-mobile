@@ -9,20 +9,22 @@ angular.module('starter.utils', [])
  
 	return {
 		check: function(){
- 
 			var defer = $q.defer();
-			
-			$ionicPlatform.ready(function() {
-	            var isOnline = PRODUCTION ? $cordovaNetwork.isOnline() : true ;
- 
-	            if (isOnline) {
-	            	defer.resolve();
-	            } else {
-	            	$cordovaToast.show('Sem conexão com a internet', 'long', 'bottom');
-	            	defer.reject();
-	            }
-        	});
- 
+			if (PRODUCTION) {
+				document.addEventListener("deviceready", function () {
+					var isOnline = $cordovaNetwork.isOnline();
+	 
+		            if (isOnline) {
+		            	defer.resolve();
+		            } else {
+		            	$cordovaToast.show('Sem conexão com a internet', 'long', 'bottom');
+		            	defer.reject();
+		            }
+				}, false);
+			} else {
+				defer.resolve();
+			}
+
         	return defer.promise;
 		}
 	};

@@ -1,4 +1,7 @@
 angular.module('starter.models', [])
+
+.constant('COMMUNICATION_ERROR_MESSAGE', 'Erro na comunicação com o servidor, favor tentar novamente.')
+
 .factory('Util', function(
 ){
 	return {
@@ -46,7 +49,7 @@ angular.module('starter.models', [])
 		getUser: function(regid, facebookToken){
 			var _this = this;
 			var defer = $q.defer();
-			alert('Fazendo o post para: ' + WEBSERVICE_URL + '/users/getAccessByFacebook');
+			// alert('Fazendo o post para: ' + WEBSERVICE_URL + '/users/getAccessByFacebook');
 			$http.post(WEBSERVICE_URL + '/users/getAccessByFacebook',
 					{
 						access_token: facebookToken,
@@ -77,17 +80,17 @@ angular.module('starter.models', [])
 			// 		defer.reject();
 			// 	});
 
-			alert('Chamando o push reg id');
+			// alert('Chamando o push reg id');
 			_this.getPushRegid()
 				.then(function(regid){
 					_this.getFacebookAccessToken()
 						.then(function(facebookToken){
-							alert('Regid: ' + regid);
-							alert('facebookToken: ' + facebookToken);
+							// alert('Regid: ' + regid);
+							// alert('facebookToken: ' + facebookToken);
 							
 							_this.getUser(regid, facebookToken)
 								.then(function(result){
-									alert(JSON.stringify(result));
+									// alert(JSON.stringify(result));
 									defer.resolve(result);
 								}, function(err){
 									defer.reject();
@@ -97,7 +100,7 @@ angular.module('starter.models', [])
 								});
 
 						}, function(err){
-							alert('Rejeitou get facebook token');
+							// alert('Rejeitou get facebook token');
 							defer.reject();
 						})
 						.finally(function(){
@@ -118,11 +121,11 @@ angular.module('starter.models', [])
 			var scope = 'email,user_birthday,user_photos';
 
 			var defer = $q.defer();
-			alert('Estrou na função mas nao vai entrar no platform ready eu acho');
+			// alert('Estrou na função mas nao vai entrar no platform ready eu acho');
 			$ionicPlatform.ready(function() {
-				alert('Etrou no platform ready');
+				// alert('Etrou no platform ready');
 	            $cordovaOauth.facebook(FACEBOOK_APP_ID, [scope]).then(function(result) {
-	            	alert('Voltou do facebook api');
+	            	// alert('Voltou do facebook api');
 	                defer.resolve(result.access_token);
 	                
 	            /**
@@ -141,11 +144,11 @@ angular.module('starter.models', [])
 			var defer = $q.defer();
 
 		    var androidConfig = {senderID: PUSH_NOTIFICATION_SENDER_ID};
-			alert('Antes de registrar');
+			// alert('Antes de registrar');
 			$ionicPlatform.ready(function() {
 	            $cordovaPush.register(androidConfig).then(function(result) {
 	                // Success
-	                alert('Registrou agora acho que nao vai entrar no registered');
+	                // alert('Registrou agora acho que nao vai entrar no registered');
 	            }, function(err) {
 	                // Error
 	                defer.reject('Erro ao registrar Push Notification');
@@ -155,7 +158,7 @@ angular.module('starter.models', [])
             $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
                 switch(notification.event) {
                     case 'registered':
-                   		alert('entrou hahah' + notification.regid);
+                   		// alert('entrou hahah' + notification.regid);
                         if (notification.regid.length > 0 ) {
                             defer.resolve(notification.regid);
                         } else {
@@ -427,8 +430,10 @@ angular.module('starter.models', [])
 })
 
 .factory('Contato', function(
+	$cordovaToast,
 	$http,
 	$q,
+	COMMUNICATION_ERROR_MESSAGE,
 	Me,
 	WEBSERVICE_URL
 ){
@@ -449,6 +454,7 @@ angular.module('starter.models', [])
 				defer.resolve();
 			})
 			.error(function(){
+				$cordovaToast.show(COMMUNICATION_ERROR_MESSAGE, 'long', 'bottom');
 				defer.reject();
 			});
 			return defer.promise;
@@ -456,14 +462,19 @@ angular.module('starter.models', [])
 	};
 })
 .factory('Evento', function(
+	$cordovaGeolocation,
 	$cordovaToast,
 	$http,
+	$ionicPlatform,
 	$q,
+	COMMUNICATION_ERROR_MESSAGE,
 	Me,
 	WEBSERVICE_URL,
 	localStorageService
 ){
 	return {
+		eventos: [],
+		listas: [],
 		currentEvent: null,
 		checkinPerfis: [],
 		checkinInfoEventId: null,
@@ -484,6 +495,8 @@ angular.module('starter.models', [])
 		},
 		getLists: function(page){
 			var defer = $q.defer();
+			var _this = this;
+
 			$http({
 					url: WEBSERVICE_URL + '/events/getLists',
 					method: 'GET',
@@ -494,9 +507,11 @@ angular.module('starter.models', [])
 					}
 				})
 				.success(function(data){
+					_this.listas = data ? data : [];
 					defer.resolve(data);
 				})
 				.error(function(){
+					$cordovaToast.show(COMMUNICATION_ERROR_MESSAGE, 'long', 'bottom');
 					defer.reject();
 				});
 
@@ -548,20 +563,34 @@ angular.module('starter.models', [])
 			var defer = $q.defer();
 			var _this = this;
 
-			$http.post(
-				WEBSERVICE_URL + '/checkins?id=' + Me.data.id + '&app_access_token=' + Me.data.app_access_token,
-				{
-					event_id: eventId
-				})
-				.success(function(){
-					_this.currentEvent.hasCheckin = 1;
-					defer.resolve();
-				})
-				.error(function(){
-					$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
-					defer.reject();
-				});
+			$ionicPlatform.ready(function(){
+				var posOptions = {timeout: 10000, enableHighAccuracy: false};
+				$cordovaGeolocation
+					.getCurrentPosition(posOptions)
+					.then(function (position) {
+						var lat  = position.coords.latitude;
+						var lng = position.coords.longitude;
 
+						$http.post(
+							WEBSERVICE_URL + '/checkins?id=' + Me.data.id + '&app_access_token=' + Me.data.app_access_token,
+							{
+								event_id: eventId,
+								lat: lat,
+								lng: lng
+							})
+							.success(function(){
+								_this.currentEvent.hasCheckin = 1;
+								defer.resolve();
+							})
+							.error(function(){
+								$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
+								defer.reject();
+							});
+					}, function(err) {
+						$cordovaToast.show('Erro ao detectar a sua localização, certifique-se que a localização do seu dispositivo está habiulitada.', 'long', 'bottom');
+						defer.reject();
+					});
+			});
 			return defer.promise;
 		}
 	};

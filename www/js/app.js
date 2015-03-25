@@ -19,7 +19,7 @@ angular.module('starter', [
     // $ionicConfigProvider.views.transition('ios');
 })
 
-.constant('PRODUCTION', false)
+.constant('PRODUCTION', true)
 // .constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
 .constant('WEBSERVICE_URL', 'http://bbgl.kinghost.net')
 .constant('FACEBOOK_APP_ID', 401554549993450)
@@ -36,27 +36,23 @@ angular.module('starter', [
 
     $ionicPlatform.ready(function() {
 
-        // var config = {
-        //     "senderID": PUSH_NOTIFICATION_SENDER_ID,
-        // };
+        var config = {
+            'senderID': PUSH_NOTIFICATION_SENDER_ID,
+        };
 
-        // if (PRODUCTION) {
-        //     $cordovaPush.register(config).then(function(result) {
-        //         alert("result: " + result);
-        //     }, function(err) {
-        //         alert("Registration error: " + err);
-        //     });
-        // }
+        if (PRODUCTION) {
+            $cordovaPush.register(config).then(function(result) {
+            }, function(err) {
+            });
+        }
 
-        // $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
-        //     switch(notification.event) {
-        //         case 'registered':
-        //             if (notification.regid.length > 0 ) {
-        //                 alert('registration ID = ' + notification.regid);
-        //             }
-        //             break;
-        //     }
-        // });
+        $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+            switch(notification.event) {
+                case 'message':
+                    // Entra aqui quando recebe um mensagem
+                break;
+            }
+        });
 
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)

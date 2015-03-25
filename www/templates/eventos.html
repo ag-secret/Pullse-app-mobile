@@ -1,19 +1,22 @@
-<ion-view title="Eventos" cache-view="true">
+<ion-view title="Eventos">
 	<ion-nav-buttons side="right">
 	    <button
 	    	type="button"
 	    	style="color: #33dbe2!important;"
 	    	class="button button-clear"
-	    	ng-click="getEvents('refresh')">
+	    	ng-click="getEvents()">
 	    	<span class="icon ion-android-refresh"></span>
 	    </button>
     </ion-nav-buttons>
 	<ion-content class="" style="background-color: #111">
-		<h2 ng-if="showNoEvents" style="color: white;">
+		<div ng-show="loading">
+			<ion-spinner></ion-spinner>
+		</div>
+		<h2 ng-show="alertNoEvents" style="color: white;">
 			Sem eventos
 		</h2>	
-		<ion-slide-box ng-if="events" does-continue="true">
-			<ion-slide ng-repeat="event in events" ng-click="openModal(event)" >
+		<ion-slide-box>
+			<ion-slide ng-repeat="event in events" ng-click="openModal(event)" does-continue="false">
 				<div
 					style="width: 100%; height: 500px; background-color: #EEE;  background-position: top center; background-size: cover;background-image: url({{imgBaseUrl}}/img/events/{{event.id}}/{{event.imagem_capa}})"></div>
 				<h3>{{event.data_inicio}}</h3>

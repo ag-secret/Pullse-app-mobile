@@ -75,11 +75,19 @@ angular.module('starter.controllers', [])
 })
 
 /**
- * A view que está ligada a este controller possui o cache-view igual a false
- * portante este controller é recarregado toda vez que a view é exibida
+ * A view ligada a este controller tem o cache-view ligado
+ * Sempre quando entrar na view ele irá recarregar as listas com a única diferença que
+ * se de começo o $scope.listas estiver vazio ele mostra o loader, caso contrario ele
+ * nao mostra nada e faz o recarregamento no fundo.
+ *
+ * IMPORTANTE!
+ * O carregamento das listas não faz nenhum tipo de paginação ou "Lazy load", ou seja,
+ * sempre que se vai no servidor ele retornar TODAS AS LISTAS ATIVAS DAQUELA BOATE NO MOMENTO
+ * assume-se o cenário que cada boate terá no máximo 20 listas ativas (Exagerando para mais)
+ * caso no futuro veja que as boates carregaram bem mais que isso será preciso mudar a forma de 
+ * carregar
  */
 .controller('ListaVipController', function(
-	$cordovaToast,
 	$ionicLoading,
 	$ionicModal,
 	$ionicPopup,
@@ -89,34 +97,40 @@ angular.module('starter.controllers', [])
 	Network
 ) {
 	/**
-	 * Listas
-	 * @type {Array}
+	 * Mostra/esconde a mensagem de "Nenhuma lista"
+	 * 
+	 * Por que não Escondemos/mostramos esta mensagem baseados $scope.listas vazio ou não?
+	 * Por que as vezes antes de carregar o $scope.lista pode estar vazio mas
+	 * não por que não tenha listas e sim por que elas ainda não foram carregadas.
+	 * 
+	 * Esta variavel garante que a mensagem irá aparecer somente quando realmente
+	 * o servidor retornar que não há listas para serem carregadas.
+	 * @type {Boolean}
 	 */
-	$scope.listas = [];
+	$scope.noLists = false;
 	/**
 	 * Como não tem como passar parametros para a modal, esta variavel diz qual é
 	 * a lista atual (que foi clicada) e quando abre o modal ele saberá o que mostrar
-	 * @type {Array Object}
+	 * @type {Object}
 	 */
 	$scope.currentList = null;
 
-	/**
-	 * Habilita/Desabilita o refresher por que quando o carregando inicial
-	 * dos dados estiver acontecendo o refresher nao pode ser acionado
-	 * @type {Boolean}
-	 */
-	$scope.refresherEnabled = false;
-
 	$scope.$on('$ionicView.beforeEnter', function(){
-		if ($scope.listas.length === 0) {
-			$scope.loading = true;
-		} else {
-			$scope.loading = false;
-		}
+		/**
+		 * Listas
+		 * @type {Array}
+		 */
+		$scope.listas = Evento.listas;
+		/**
+		 * Só mostra o loading se a tela estiver vazio de listas,
+		 * caso contrario ele não mostra e o carregamento será feito no fundo.
+		 * @type {Boolean}
+		 */
+		$scope.loading = $scope.listas.length === 0 ? true : false;
 		/**
 		 * Carrega as listas antes de entrar na view
 		 */
-		$scope.getLists('first');
+		$scope.getLists();
 	});
 
 	/**
@@ -130,7 +144,7 @@ angular.module('starter.controllers', [])
 	});
 	/**
 	 * Abre a modal de detalhes da lista
-	 * @param {Array Object} lista - Os dadis referentes a linha clicada na lista de listas hehe
+	 * @param {Object} lista - Os dados referentes a linha clicada na lista de listas hehe
 	 */
 	$scope.openModal = function(lista) {
 		$scope.currentList = lista;
@@ -145,41 +159,36 @@ angular.module('starter.controllers', [])
 
 	/**
 	 * Carrega listas
-	 * @param  {string} event - Como o carregamento inicial e o refresher usam este mesmo método,
-	 * este parametro serve para o metodo saber por onde ele foi chamado caso precise(e vai precisar) 
-	 * fazer algum detalhe diferente para um ou outro
 	 */
-	$scope.getLists = function(event){
+	$scope.getLists = function(){
 		Network.check()
-			.then(function(result){
+			.then(function(){
 				$timeout(function(){
 					Evento.getLists($scope.page)
 						.then(function(result){
-							$scope.listas = result;
-						}, function(err){
-							$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
+							$scope.listas = Evento.listas;
+							$scope.noLists = $scope.listas.length === 0 ? true : false;
 						})
 						.finally(function(){
 							$scope.loading = false;
-							$scope.refresherEnabled = true;
 							$scope.$broadcast('scroll.refreshComplete');
 						});
 				/**
-				 * Caso seja refresher ele esperar uns segundos para nao dar um efeito
-				 * estranho do loading apenas piscar se a requisição responder muito rapido,
-				 * caso seja a primeira carregada ele nao espera nada pois como esta carrega
-				 * vai ser muito comum (O usuario mudando de view e voltando para esta) entao 
-				 * nao seria legal esperar.
+				 * Caso o leader esteja aparecendo colocamos 1500ms de timeout
+				 * pois se a requisição for feita muito rápida o loader irá 
+				 * aparecer e desaparecer muito rapido fazendo um estranho efeito de "piscar".
+				 * Caso o loader nao esteja aparecendo e a requisição esteja sendo feita no fundo
+				 * não é necessário esta espera.
 				 */
-				}, 1000);
+				}, $scope.loading ? 1500 : 0);
 			}, function(){
 				$scope.loading = false;
-				$scope.refresherEnabled = true;
+				$scope.$broadcast('scroll.refreshComplete');
 			});
 	};
 
 	/**
-	 * Executa quando clica em "Envar nome" para a lista selecionada
+	 * Executa quando clica em "Enviar nome" para a lista selecionada
 	 */
 	$scope.send = function(){
 		Network.check()
@@ -205,19 +214,13 @@ angular.module('starter.controllers', [])
 									title: 'Aviso!',
 									template: err.message
 								});
-								/**
-								 * Descomentar caso precise usar isso no futuro mas por
-								 * hora o evento de clike no botão do alert não sera usado para nada
-								 */
-								// alertPopup.then(function(res) {
-								// });
 							} else {
 								$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 							}
 						}).finally(function(){
 							$ionicLoading.hide();
 						});
-				}, 2000);
+				}, 1500);
 			}, function(){
 				$ionicLoading.hide();
 			});
@@ -227,6 +230,7 @@ angular.module('starter.controllers', [])
 	$cordovaToast,
 	$ionicLoading,
 	$ionicModal,
+	$ionicSideMenuDelegate,
 	$ionicSlideBoxDelegate,
 	$scope,
 	$timeout,
@@ -234,36 +238,38 @@ angular.module('starter.controllers', [])
 	Network,
 	WEBSERVICE_URL
 ){
-
 	/**
 	 * Base URL para carregarmos as images.
 	 * @type {string}
 	 */
 	$scope.imgBaseUrl = WEBSERVICE_URL;
 	/**
-	 * Eventos
-	 * @type {Array}
-	 */
-	$scope.events = [];
-	$ionicSlideBoxDelegate.update();
-	/**
 	 * Controla o alert que não tem eventos. Não usamos o "eventos.length == 0" por que antes de
 	 * carregar esta condição seria satisfeito porém não quer dizer que nao tenha evento e sim
 	 * que ainda nao carregou, por isso precisamos desta variavel para controlar o alert corretamente.
 	 * @type {Boolean}
 	 */
-	$scope.showNoEvents = false;
+	$scope.alertNoEvents = false;
 	/**
 	 * Como não tem como passar parametro para a modal esta variavel diz a modal qual o atual slide
 	 * portanto qual evento mostrar
 	 * @type integer
 	 */
 	$scope.currentEvent = null;
-	/**
-	 * Carrega as listas apenas quando a view é carregada pela primeira vez, depois ele atualiza no botão
+	 /**
+	 * Eventos
+	 * @type {Array}
 	 */
-	$scope.$on('$ionicView.loaded', function(){
-		$scope.getEvents('first');
+	$scope.events = [];
+	$scope.$on('$ionicView.beforeEnter', function(){
+		$ionicSideMenuDelegate.canDragContent(false);
+		$ionicSlideBoxDelegate.update();
+		if ($scope.events.length === 0) {
+			$scope.getEvents();
+		}
+	});
+	$scope.$on('$ionicView.beforeLeave', function(){
+		$ionicSideMenuDelegate.canDragContent(true);
 	});
 	/**
 	 * Criação da modal
@@ -280,57 +286,51 @@ angular.module('starter.controllers', [])
 	 * também então este parametro assume 'first' ou 'refresh' e serve para o metodo saber de aonde ele
 	 * foi chamado
 	 */
-	$scope.getEvents = function(event){
+	$scope.getEvents = function(){
 		Network.check()
 			.then(function(result){
-				$ionicLoading.show({template: 'Atualizando os eventos...'});
+				$scope.loading = false;
+				$scope.events = [];
+				$ionicSlideBoxDelegate.update();
+				$scope.loading = true;
 				$timeout(function(){
 					Evento.get()
 						.then(function(result){
-							$scope.events = result;
-							/**
-							 * Faz um update do Slide Box para ele se reajustar para os novos
-							 * itens dele
-							 */
-							$ionicSlideBoxDelegate.update();
 							if (result) {
+								console.log(result);
+								$scope.events = result;
 								/**
-								 * Caso não venha nenhum valor do servidor mostramos o alert
-								 * falando que não existe nenhum evento cadastrado
+								 * Faz um update do Slide Box para ele se reajustar para os novos
+								 * itens dele
 								 */
-								$scope.showNoEvents = false;
+								$ionicSlideBoxDelegate.update();
 								/**
 								 * Aqui é uma pequena gambi, se o slide atual for o ultimo e quando atulizar ele
 								 * nao existir mais todo o slidebox sumia, então indo para o primeiro resolve o problema
 								 */
-								$ionicSlideBoxDelegate.slide(0);	
+								// $ionicSlideBoxDelegate.slide(0);	
+								/**
+								 * Caso não venha nenhum valor do servidor mostramos o alert
+								 * falando que não existe nenhum evento cadastrado
+								 */
+								$scope.alertNoEvents = false;
 							} else {
+								$scope.events = [];
 								/**
 								 * Explicado no 'if' acima.
 								 */
-								$scope.showNoEvents = true;
+								$scope.alertNoEvents = true;
 							}
-							/**
-							 * Só esconde o loading depois que faz o update pq ele esconde uma piscada de tela estranha
-							 * que o update faz
-							 */
-							$ionicLoading.hide();
-
-							if (event != 'first') {
-								$cordovaToast.show('Eventos atualizados.', 'long', 'bottom');	
-							}
-						}, function(err){
-							$ionicLoading.hide();
-							$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
-							
+						}).finally(function(){
+							$scope.loading = false;
 						});
-				}, 1000);
+				}, 1500);
 			}, function(){
 				/**
 				 * Neste caso como usamos um loading que obstrui a tela é necessario escode-lo
 				 * caso a internet falhe
 				 */
-				$ionicLoading.hide();
+				$scope.loading = false;
 			});
 	};
 	/**
@@ -363,17 +363,15 @@ angular.module('starter.controllers', [])
 	localStorageService
 ){
 	
-	$timeout(function(){
+	$ionicPlatform.ready(function(){
 		var me = localStorageService.get('Me');
 		if (me) {
 			Me.data = me;
-			$state.go('app.checkin-main');
+			$state.go('app.eventos');
 		} else {
 			$state.go('login');
 		}
-		
-	}, 500);
-
+	});
 })
 .controller('CheckinMatchesController', function(
 	$stateParams,
@@ -450,6 +448,11 @@ angular.module('starter.controllers', [])
 	
 	$scope.eventId = $stateParams.eventId;
 
+	$scope.$on('$ionicView.loaded', function(){
+		$scope.loading = true;
+		$scope.perfis = Checkin.pleopleThatIHeart;
+		$scope.loadPerfis();
+	});
 	$scope.$on('$ionicView.beforeEnter', function(){
 		$scope.loading = true;
 		$scope.perfis = Checkin.pleopleThatIHeart;
@@ -1125,13 +1128,11 @@ angular.module('starter.controllers', [])
 							 */
 							$scope.mensagem = null;
 							$cordovaToast.show('Contato enviado, obrigado.', 'long', 'bottom');
-						}, function(err){
-							$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 						})
 						.finally(function(){
 							$ionicLoading.hide();
 						});
-				}, 2000);
+				}, 1500);
 			});
 	};
 })

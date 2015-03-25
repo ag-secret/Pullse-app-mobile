@@ -7,7 +7,7 @@
 		</div>
 		<!-- Refresher -->
 		<ion-refresher
-			ng-if="refresherEnabled"
+			ng-if="!loading"
 			pulling-text="Puxe para atualizar..."
 			on-refresh="getLists('refresh')">
 		</ion-refresher>
@@ -21,11 +21,7 @@
 				{{lista.name}}
 			</ion-item>
 		</ion-list>
-		<!-- Scroll Infinito -->
-		<ion-infinite-scroll
-			ng-if="moreDataCanBeLoaded"
-			on-infinite="getMoreListas()">
-		</ion-infinite-scroll>
+		<h2 ng-show="noLists" style="color: white;">Nenhuma lista encontrada!</h2>
 	<!-- Fim do conteúdo -->
 	</ion-content>
 </ion-view>
