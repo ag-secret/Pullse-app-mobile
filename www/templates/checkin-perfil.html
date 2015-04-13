@@ -1,35 +1,53 @@
-<ion-view title="{{profile.name}}" class="content">
-	<ion-content class="text-center">
-		<img ng-src="https://graph.facebook.com/{{profile.facebook_uid}}/picture?width=300&height=300" class="" height="300px" width="100%">
-		<div ng-show="loading">
-			Carregando...
+<ion-view title="{{profile.name}}">
+	<ion-content class="content">
+		<div style="height: 60%" class="text-center profile-header">
+			<div class="row" style="height: 100%;">
+				<div class="col col-center">
+					<div class="profile-avatar-wrap">
+						<img
+							ng-src="https://graph.facebook.com/{{profile.facebook_uid}}/picture?width=300&height=300" 
+							class="profile-avatar">
+					</div>
+
+					<h1 class="profile-name">{{profile.name}}</h1>	
+				</div>
+			</div>
 		</div>
-		<div ng-if="!loading">
-			<h2 ng-show="heartMe && !thatIHeart">Curtiu você</h2>
-			<h2 ng-show="thatIHeart && !heartMe">Você curtiu</h2>
-			<h2 ng-show="heartMe && thatIHeart">Combinaram</h2>
+<!-- 		<div ng-if="loading">
+			Carregando...
+		</div> -->
+		<div ng-if="!loading" class="text-center" style="height: 40%;">
+			<span class="label-dark" ng-show="heartMe && !thatIHeart">Curtiu você</span>
+			<span class="label-dark" ng-show="thatIHeart && !heartMe">Você curtiu</span>
+			<span class="label-dark" ng-show="heartMe && thatIHeart">Combinaram</span>
+
 			<button
 				ng-disabled="!canLike()"
 				type="button"
-				class="button button-positive"
+				class="btn-like"
 				ng-show="hasBtnHeart && canLike"
 				ng-click="addHeartPreflight()">
 
-				Curtir
+				<span class="icon ion-heart"></span>
 			</button>
+			
 			<div ng-show="!canLike()">
 				Você nao pode curtir pq nao fez checkin
 			</div>
 
-			<div ng-if="message">
-				<div ng-if="profile.id != messageSender">
-					Você escreveu <span am-time-ago="messageCreated"></span>:
+			<div ng-if="message" class="padding">
+				<div class="profile-message-sender">
+					<span ng-if="profile.id != messageSender">
+						Você disse:
+					</span>
+					<span ng-if="profile.id == messageSender">
+						{{profile.name}} disse:
+					</span>
 				</div>
-				<div ng-if="profile.id == messageSender">
-					{{profile.name}} escreveu <span am-time-ago="messageCreated"></span>:
-				</div>
-				<p>
+				<p class="profile-message">
 					{{message}}
+					<br>
+					<span am-time-ago="messageCreated"></span>
 				</p>
 			</div>
 		</div>

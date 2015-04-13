@@ -1,10 +1,14 @@
 <ion-modal-view>
-	<ion-header-bar>
+	<ion-header-bar style="border: 0!important;">
 		<h1 class="title">{{currentList.name}}</h1>
-		<button class="button button-clear button-positive" ng-click="closeModal()">Fechar</button>
+		<button class="button button-clear button-icon" ng-click="closeModal()">
+			<span class="icon ion-android-close"></span>
+		</button>
 	</ion-header-bar>
 	<ion-content class="padding">
-		{{currentList.descricao_lista_vip}}
+		<p style="margin-top: 20px;">
+			{{currentList.descricao_lista_vip}}
+		</p>
 		<button class="button button-positive button-full" ng-click="send()">Enviar nome</button>
 	</ion-content>
 </ion-modal-view>

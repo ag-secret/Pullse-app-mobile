@@ -11,10 +11,6 @@
 			pulling-text="Puxe para atualizar..."
 			on-refresh="getLists('refresh')">
 		</ion-refresher>
-		<!-- Sub-título da view -->
-		<div class="content-title text-center">			
-			<p>Envie o seu nome para a lista Feminina.</p>
-		</div>
 		<!-- Lista fazendo um loop na variavel listas -->
 		<ion-list>
 			<ion-item collection-repeat="lista in listas" ng-click="openModal(lista)">

@@ -5,6 +5,11 @@ angular.module('starter.controllers', [])
 		$scope.me = Me.data;
 	});
 })
+
+.controller('TesteController', function(){
+	
+})
+
 .controller('LoginController', function(
 	$scope,
 	$ionicLoading,
@@ -201,22 +206,6 @@ angular.module('starter.controllers', [])
 						.then(function(result){
 							$cordovaToast.show('Inscrição feita com sucesso!', 'long', 'bottom');
 							$scope.closeModal();
-						}, function(err){
-							/**
-							 * Se der o erro 403 significa que a inscrição foi rejeitada,
-							 * por algum motivo (vagas esgotadas, imcompatibilidade de genero etc)
-							 * é importante lembrar que se der outro erro, normalmente o 400
-							 * é por que deu algum erro no servidor e entao mostramos a Toast padrão
-							 * para esse tipo de situação
-							 */
-							if (err.code == 403) {
-								var alertPopup = $ionicPopup.alert({
-									title: 'Aviso!',
-									template: err.message
-								});
-							} else {
-								$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
-							}
 						}).finally(function(){
 							$ionicLoading.hide();
 						});
@@ -351,27 +340,21 @@ angular.module('starter.controllers', [])
 })
 
 .controller('DispatcherController', function(
-	$cordovaNetwork,
 	$ionicPlatform,
 	$state,
 	$timeout,
-	Checkin,
-	Evento,
 	Me,
-	PRODUCTION,
-	PUSH_NOTIFICATION_SENDER_ID,
 	localStorageService
 ){
 	
-	$ionicPlatform.ready(function(){
-		var me = localStorageService.get('Me');
-		if (me) {
-			Me.data = me;
-			$state.go('app.eventos');
-		} else {
-			$state.go('login');
-		}
-	});
+	var me = localStorageService.get('Me');
+	console.log(me);
+	if (me) {
+		Me.data = me;
+		$state.go('app.checkin-main');
+	} else {
+		$state.go('login');
+	}
 })
 .controller('CheckinMatchesController', function(
 	$stateParams,
@@ -503,6 +486,7 @@ angular.module('starter.controllers', [])
 	Checkin,
 	Network
 ){
+	var intervalTime = 2000;
 	/**
 	 * Controla o alert que diz que não há pessoas
 	 * @type {Boolean}
@@ -560,13 +544,18 @@ angular.module('starter.controllers', [])
 	 * @return {[type]} [description]
 	 */
 	$scope.startInterval = function(){
+		console.log('Iniciando INTERVALO!!!!!!!!');
 		$scope.stopInterval();
-		interval = $interval(function(){
-			$scope.loadPerfis('timer');
-		}, 1000);
+		$timeout(function(){
+			interval = $interval(function(){
+				$scope.loadPerfis('timer');
+			}, intervalTime);
+		}, intervalTime);
+		
 	};
 
 	$scope.stopInterval = function(){
+		console.log('Parando intervalo!!!!!');
 		$interval.cancel(interval);
 		interval = null;
 	};
@@ -603,10 +592,10 @@ angular.module('starter.controllers', [])
 							if (event == 'refresher') {
 								$scope.$broadcast('scroll.refreshComplete');
 							}
+
 							$scope.startInterval();
 						}
 					}, function(err){
-						$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 						$scope.loading = false;
 						$scope.$broadcast('scroll.refreshComplete');
 					});
@@ -616,59 +605,59 @@ angular.module('starter.controllers', [])
 			});
 	};
 })
-.controller('CheckinBuscaController', function(
-	$cordovaToast,
-	$interval,
-	$ionicLoading,
-	$ionicScrollDelegate,
-	$scope,
-	$stateParams,
-	$timeout,
-	Checkin,
-	Network
-) {
+// .controller('CheckinBuscaController', function(
+// 	$cordovaToast,
+// 	$interval,
+// 	$ionicLoading,
+// 	$ionicScrollDelegate,
+// 	$scope,
+// 	$stateParams,
+// 	$timeout,
+// 	Checkin,
+// 	Network
+// ) {
 	
-	$scope.eventId = $stateParams.eventId;
-	$scope.perfis = Checkin.perfis;
+// 	$scope.eventId = $stateParams.eventId;
+// 	$scope.perfis = Checkin.perfis;
 
-	$scope.$on('$ionicView.beforeEnter', function(){
-		$scope.perfis = Checkin.perfis;
-		$scope.getNewPerfis('first');
-	});
+// 	$scope.$on('$ionicView.beforeEnter', function(){
+// 		$scope.perfis = Checkin.perfis;
+// 		$scope.getNewPerfis('first');
+// 	});
 
-	$scope.getNewPerfis = function(event){
-		Network.check()
-			.then(function(result){
-				$scope.loading = true;
-					Checkin.getAll($stateParams.eventId)
-						.then(function(result){
-							if (result) {
-								$scope.perfis = Checkin.perfis;
+// 	$scope.getNewPerfis = function(event){
+// 		Network.check()
+// 			.then(function(result){
+// 				$scope.loading = true;
+// 					Checkin.getAll($stateParams.eventId)
+// 						.then(function(result){
+// 							if (result) {
+// 								$scope.perfis = Checkin.perfis;
 
-								$timeout(function(){
-									$scope.getNewPerfis(event);
-								}, 100);
-							} else {
-								$scope.loading = false;
-							}
-						}, function(err){
-							$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
-						});
-			}, function(err){
-				$scope.loading = false;
-			});
-	};
+// 								$timeout(function(){
+// 									$scope.getNewPerfis(event);
+// 								}, 100);
+// 							} else {
+// 								$scope.loading = false;
+// 							}
+// 						}, function(err){
+// 							$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
+// 						});
+// 			}, function(err){
+// 				$scope.loading = false;
+// 			});
+// 	};
 
-})
+// })
 .controller('CheckinMainController', function(
 	$cordovaToast,
 	$interval,
 	$ionicLoading,
 	$ionicModal,
 	$ionicScrollDelegate,
+	$q,
 	$scope,
 	$timeout,
-	$q,
 	Checkin,
 	Evento,
 	Me,
@@ -763,7 +752,6 @@ angular.module('starter.controllers', [])
 						}
 					}, function(err){
 						$scope.loading = false;
-						$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 					});
 			}, function(err){
 				$scope.loading = false;
@@ -840,8 +828,6 @@ angular.module('starter.controllers', [])
 							}
 							$scope.startInterval();
 						}
-					}, function(err){
-						$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 					});
 			}, function(err){
 				$scope.loading = false;
@@ -882,7 +868,6 @@ angular.module('starter.controllers', [])
 							$scope.startInterval();
 						}
 					}, function(err){
-						$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 						$scope.$broadcast('scroll.refreshComplete');
 					});
 			}, function(err){
@@ -909,8 +894,6 @@ angular.module('starter.controllers', [])
 						.then(function(result){
 							$scope.showCheckinButton = false;
 							$cordovaToast.show('Checkin feito com sucesso =)', 'long', 'bottom');
-						}, function(err){
-							$cordovaToast.show('Ocorreu um erro ao efeturar o seu checkin', 'long', 'bottom');
 						}).finally(function(){
 							$ionicLoading.hide();
 						});
@@ -927,11 +910,11 @@ angular.module('starter.controllers', [])
 	$ionicLoading,
 	$ionicPopup,
 	$scope,
-	$timeout,
 	$stateParams,
+	$timeout,
 	Checkin,
-	Me,
 	Evento,
+	Me,
 	Network
 ) {
 	/**
@@ -1016,8 +999,6 @@ angular.module('starter.controllers', [])
 				Checkin.addHeart({event_id: event_id, profile_id: id, message: $scope.data.message})
 					.then(function(result){
 						$scope.getStatus();
-					}, function(err){
-						$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 					})
 					.finally(function(){
 						$ionicLoading.hide();
@@ -1039,8 +1020,6 @@ angular.module('starter.controllers', [])
 						} else {
 							$scope.addHeart();
 						}
-					}, function(err){
-						$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 						$ionicLoading.hide();
 					});
 			}, function(err){
@@ -1077,8 +1056,6 @@ angular.module('starter.controllers', [])
     							$scope.messageCreated = result[0].message_created;
 							}
 						}
-					}, function(err){
-						$cordovaToast.show('Erro na comunicação com o servidor, favor tentar novamente.', 'long', 'bottom');
 					})
 					.finally(function(){
 						$scope.loading = false;
@@ -1127,12 +1104,11 @@ angular.module('starter.controllers', [])
 							 * Reseta o texto da caixa de texto.
 							 */
 							$scope.mensagem = null;
-							$cordovaToast.show('Contato enviado, obrigado.', 'long', 'bottom');
 						})
 						.finally(function(){
 							$ionicLoading.hide();
 						});
-				}, 1500);
+				}, 1000);
 			});
 	};
 })

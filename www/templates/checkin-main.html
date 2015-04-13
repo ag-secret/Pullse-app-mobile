@@ -2,7 +2,6 @@
 	<ion-nav-buttons side="right">
 	    <button
 	    	ng-click="openModal()"
-	    	style="color: #33dbe2!important;"
 	    	class="button button-clear"
 	    	ng-if="currentEvent && perfis.length > 0">
 
@@ -12,15 +11,21 @@
 
 	<div
 		class="tabs tabs-top tabs-dark"
-		style="background-color: black; color: #33dbe2!important"
+		style="background-color: #131012!important; color: #FFF!important"
 		ng-show="currentEvent">
-		<a class="tab-item" href="#/app/checkin-hearted-me/{{currentEvent.id}}/1">
+		<a
+			style="color: #FFF!important"
+			class="tab-item" href="#/app/checkin-hearted-me/{{currentEvent.id}}/1">
 			Me curtiram
 		</a>
-		<a class="tab-item" href="#/app/checkin-that-i-hearted/{{currentEvent.id}}/2">
+		<a
+			style="color: #FFF!important"
+			class="tab-item" href="#/app/checkin-that-i-hearted/{{currentEvent.id}}/2">
 			Eu curti
 		</a>
-		<a class="tab-item" href="#/app/checkin-matches/{{currentEvent.id}}/3">
+		<a
+			style="color: #FFF!important"
+			class="tab-item" href="#/app/checkin-matches/{{currentEvent.id}}/3">
 			Combinações
 		</a>
 	</div>
@@ -43,13 +48,13 @@
 			</button>
 		</div>
 
- 		<div >
+ 		<div>
 			<div class="" style="margin-bottom: -5px;float: left; width: 33.333333%;" ng-repeat="perfil in perfis">
 				<a
 					href="#/app/checkin-perfil/{{perfil.id}}/{{currentEvent.id}}">
 					<img
 						ng-src="https://graph.facebook.com/{{perfil.facebook_uid}}/picture?width=140&height=140"
-						class="image"
+						class="image checkin-main-image"
 						style="width: 100%;height: auto!important;">
 				</a>
 			</div>

@@ -1,20 +1,16 @@
 <ion-view title="Contato">
 
     <ion-nav-buttons side="right">
-        <button type="button" style="color: #33dbe2!important;" class="button button-clear" ng-disabled="!mensagem" ng-click="save()">
+        <button type="button" class="button button-clear" ng-disabled="!mensagem" ng-click="save()">
         	<span class="icon ion-ios-paperplane"></span>
         </button>
     </ion-nav-buttons>
 
 	<ion-content class="content padding">
-
-		<div class="content-title text-center">			
-			<p>Envie o seu contato e nos conte as suas novidades.</p>
-		</div>
-		
 		<div class="row">
 			<div class="col">
 				<textarea
+					focus-me
 					rows="10"
 					placeholder="Digite aqui a sua mensagem..."
 					class="custom-input"

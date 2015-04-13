@@ -1,35 +1,55 @@
 /* Empty. Add your own CSS if you like */
+.scroll{
+	height: 100%!important;
+}
+::-webkit-scrollbar {
+  display: none!important;
+}
+.platform-android .scroll-content{
+  margin-top: 0!important;
+  margin-bottom:0!important;
+  padding-top:0!important;
+  overflow: hidden!important;
+}
+
 @font-face {
-    font-family: 'Gotham';
-    font-style: normal;
-    font-weight: 100;
-    src: local('../fonts/GOTHAM-BOOK.ttf'),
-    url('../fonts/GOTHAM-BOOK.ttf') format('truetype');
+  font-family: "HelveticaNeue";
+  src: url("../fonts/HelveticaNeue.eot");
+  src: url("../fonts/HelveticaNeue.eot") format("embedded-opentype"), url("../fonts/HelveticaNeue.ttf") format("truetype");
 }
 
-/*html, body{
-	font-family: 'Gotham';
-}*/
-
-/*.bar {
-	height:57px;
-	background-color: #000!important;
-	border: 0;
+@font-face {
+  font-family: "HelveticaNeue Light";
+  src: url("../fonts/HelveticaNeue-Light.eot");
+  src: url("../fonts/HelveticaNeue-Light.eot") format("embedded-opentype"), url("../fonts/HelveticaNeue-Light.ttf") format("truetype");
 }
 
-.has-header {
-	top: 57px!important;
+body{
+	font-family: "HelveticaNeue"!important;
+}
+h1{
+	font-family: "HelveticaNeue"!important;
+}
+h2{
+	font-family: "HelveticaNeue"!important;
+}
+h3{
+	font-family: "HelveticaNeue"!important;
 }
 
-.bar .title{
-	line-height: 57px!important;
+.buttons button, .back-button{
+	color: #FFF!important;
 }
-.bar .btn-sidemenu-toggle {
-	top: 5px!important;
-}*/
+
+.login-footer{
+	background-color: rgba(0, 0, 0, 0.5);
+	color: #EEE;
+	font-size: 19px;
+	font-weight: bold;
+}
 
 .bar-stable{
-	background-color: #000!important;
+	background-color: #131012!important;
 	border: 0!important;
 }
 
@@ -40,43 +60,61 @@
 	border-radius: 5px;
 }
 
-.sidemenu-header {
-	background-image: url(../img/sidemenu-bg.jpg);
-	background-position: center center;
-	background-size: cover;
-}
 .btn-sidemenu-toggle {
-	color: #33dbe2!important;
+	color: #FFF!important;
 }
 .menu{
 	background-color: #1c1c1c;
 }
+
+/*SIDE MENU*/
 .sidemenu-list {
 }
-.sidemenu-item {
-	background-color: #1c1c1c;	
-	border-color: #333;
+.sidemenu-item, a.sidemenu-item:active, a.sidemenu-item:hover {
+	background-color: rgba(0, 0, 0, 0);
+	font-size: 20px;
+}
+
+.sidemenu-footer{
+	margin: 30px 0 0 15px;
+}
+
+.sidemenu-footer a span{
+	color: rgba(255, 255, 255, 0.3);
+	font-size: 20px!important;
 }
 a.sidemenu-item, a.sidemenu-item p {
 	color: #EEE;
 }
-a.sidemenu-item:active, a.sidemenu-item:hover{
-	background-color: #000!important;
-	border-color: #222!important;
+.sidemenu-header{
+	width: 100%!important;
+	margin-bottom: 20px;
+	margin-top: 15px;
 }
-.sidemenu-item span{
-	color: #33dbe2;
+.sidemenu-name{
+	color: #d61277;
+	font-weight: bold;
+	font-size: 20px;
+}
+.sidemenu-avatar-wrap{
+	margin: 10px 0;
+	padding-left: 0;
+	background-image: url(../img/tunz.png);
+	background-size: auto 55%;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+.sidemenu-avatar {
+	width: 50%;
+	border-radius: 50%;
+	border: solid 8px #1e0811;
 }
 
-.sidemenu-avatar {
-	width: 140px;
-	border-radius: 140px;
-	border: solid 6px #333;
-	margin: 25px 0;
-}
 
 .title{
-	color: #33dbe2!important;
+	color: #FFF!important;
+	font-weight: bold!important;
+	font-family: "HelveticaNeue"
 }
 
 .custom-combobox{
@@ -100,9 +138,61 @@ a.sidemenu-item:active, a.sidemenu-item:hover{
 	font-size: 26px;
 }
 
-.content {
+.btn-login{
+	color: white;
+	border: solid 2px white;
+	padding: 18px 10px;
+	background-color: rgba(0, 0, 0, 0);
+	font-size: 24px;
+	font-weight: bold;
+	width: 100%;
+	border-radius: 4px;
+	font-family: "HelveticaNeue"!important;
+}
+
+.eventos-footer{
+	height: 50%;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	/*background-color: #000!important;*/
+	text-align: center;
+	padding: 20% 0 0 0;
+	
+background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 10%, rgba(0,0,0,1) 40%, rgba(0,0,0,1) 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(10%,rgba(0,0,0,0.5)), color-stop(40%,rgba(0,0,0,1)), color-stop(100%,rgba(0,0,0,1)));
+background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 10%,rgba(0,0,0,1) 40%,rgba(0,0,0,1) 100%);
+background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 10%,rgba(0,0,0,1) 40%,rgba(0,0,0,1) 100%);
+background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 10%,rgba(0,0,0,1) 40%,rgba(0,0,0,1) 100%);
+background: linear-gradient(to bottom,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 10%,rgba(0,0,0,1) 40%,rgba(0,0,0,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 );
+
+
+}
+.eventos-footer h1{
+	margin-top: 0;
+	color: #FFF;
+	font-size: 50px!important;
+}
+.eventos-footer h3{
+	color: #FFF;
+	font-size: 30px!important;
+	margin-bottom: 5px;
+}
+.eventos-footer span{
+	color: #FFF;
+	font-size: 70px!important;
+}
+
+.content-login {
+	background-image: url(../img/bg_home.png);
 	background-color: #000;
-	background-image: url(../img/bg.jpg);
+	background-position: top center;
+	background-size: cover;
+}
+.content {
+	background-image: url(../img/bg.png);
+	background-color: #000;
 	background-position: top center;
 	background-size: cover;
 }
@@ -189,9 +279,6 @@ a.sidemenu-item:active, a.sidemenu-item:hover{
 	margin-right: 20px;
 	margin-top: 20px;
 }
-.back-button {
-	color: #33dbe2!important;
-}
 
 .ig-kelvin {
   -webkit-filter:sepia(0.4) saturate(2.5) hue-rotate(-30deg) contrast(0.67);
@@ -219,4 +306,106 @@ a.sidemenu-item:active, a.sidemenu-item:hover{
 
 .image{
 	background-color: #EEE!important;
+	/*border: 1px solid #FFF;*/
+}
+
+
+/*LISTA */
+.list .item{
+	background-color: rgba(0, 0, 0, 0);
+	border: rgba(255, 255, 255, 0.1) 1px solid;
+}
+.list .item a{
+	background-color: rgba(0, 0, 0, 0);
+}
+.list .item, .list .item a p, .list .item a h2{
+	color: #FFF;
+}
+
+/*MODAL*/
+.modal{
+	width: 94%;
+	margin-left: 3%;
+	margin-top: 60%;
+	background-color: #131012!important;
+	color: #CCC!important;
+	font-weight: bold;
+}
+.modal .bar h1.title{
+	color: #CCC!important;
+}
+.modal .bar{
+	background-color: #131012!important;
+	border: 0!important;
+}
+.ionic-scroll{
+	border: 0!important;
+}
+
+/*PROFILE*/
+.profile-name{
+	color: #d61277;
+	font-weight: bold;
+	font-size: 30px;
+}
+.profile-header{
+}
+.profile-avatar{
+	width: 60%;
+	height: 60%;
+	min-height: 60%;
+	min-width: 60%;
+	border-radius: 60%;
+	border: 8px solid rgba(0, 0, 0, 0.2);
+}
+.profile-avatar-wrap{
+	width: 100%;
+	height: auto;
+	position: relative;
+	background-image: url(../img/tunz.png);
+	background-position: center center;
+	background-size: 100% 45%;
+	background-repeat: no-repeat;
+}
+
+.profile-message{
+	border-radius: 4px;
+	text-align: left;
+	font-size: 16px;
+	padding: 15px;
+	background-color: rgba(0, 0, 0, 0.9);
+	color: #FFF;
+	font-weight: bold;
+}
+.profile-message span{
+	font-size: 13px;
+	color: #BBB;
+}
+.profile-message-sender{
+	color: #FFF;
+	text-align: left;
+	font-weight: bold;
+	margin: 40px 0 15px 0;
+}
+
+
+/*CUSTOM LABEL*/
+.label-dark{
+	background-color: rgba(0, 0, 0, 0.5);
+	color: #FFF;
+	padding: 10px;
+	font-size: 18px;
+	border-radius: 4px;
+}
+
+/*BUTTON LIKE*/
+.btn-like{
+	background-color: #d61277;
+	border: 0;
+	color: #FFF;
+	width: 140px;
+	height: 140px;
+	font-size: 70px;
+	border-radius: 140%;
+	border: 10px rgba(0, 0, 0, 0.3) solid;
 }

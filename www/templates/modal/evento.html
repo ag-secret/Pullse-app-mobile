@@ -1,9 +1,13 @@
 <ion-modal-view>
 	<ion-header-bar>
 		<h1 class="title">{{currentEvent.name}}</h1>
-		<button class="button button-clear button-positive" ng-click="closeModal()">Fechar</button>
+		<button class="button button-clear button-icon" ng-click="closeModal()">
+			<span class="icon ion-android-close"></span>
+		</button>
 	</ion-header-bar>
-	<ion-content>
-		{{currentEvent.descricao}}
+	<ion-content class="padding">
+		<p style="margin-top: 20px;">
+			{{currentEvent.descricao}}
+		</p>
 	</ion-content>
 </ion-modal-view>

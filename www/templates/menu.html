@@ -5,51 +5,55 @@
             </ion-nav-back-button>
 
             <ion-nav-buttons side="left">
-                <button class="button button-icon button-clear ion-navicon-round btn-sidemenu-toggle" menu-toggle="left"></button>
+                <button class="button button-icon button-clear ion-android-menu btn-sidemenu-toggle" menu-toggle="left"></button>
             </ion-nav-buttons>
         </ion-nav-bar>
         <ion-nav-view name="menuContent" ></ion-nav-view>
     </ion-side-menu-content>
 
     <ion-side-menu side="left">
-        <ion-content>
+        <ion-content class="content">
             <div class="text-center sidemenu-header">
-                <img ng-src="https://graph.facebook.com/{{me.facebook_uid}}/picture?width=140&height=140" class="sidemenu-avatar">
+                <div class="sidemenu-avatar-wrap">
+                    <img ng-src="https://graph.facebook.com/{{me.facebook_uid}}/picture?width=140&height=140" class="sidemenu-avatar">
+                </div>
+                <div class="sidemenu-name">
+                   {{ me.name }}
+                </div>
             </div>
             <ion-list class="sidemenu-list">
-                <a class="item">
-                    {{me.name}}
-                </a>
-                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/eventos">
-                    <span class="icon ion-android-calendar"></span>
+                <a class="item sidemenu-item menu-close" href="#/app/eventos">
                     <strong>Eventos</strong>
-                    <p>Os eventos da semana</p>
                 </a>
-                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/checkin-main">
-                    <span class="icon ion-ios-location"></span>
+                <a class="item sidemenu-item menu-close" href="#/app/checkin-main">
                     <strong>Check-in</strong>
-                    <p>Os eventos da semana</p>
                 </a>
-                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/lista-vip">
-                    <span class="icon ion-android-list"></span>
+                <a class="item sidemenu-item menu-close" href="#/app/lista-vip">
                     <strong>Lista Vip</strong>
-                    <p>Os eventos da semana</p>
                 </a>
-                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/contato">
-                    <span class="icon ion-android-mail"></span>
+                <a class="item sidemenu-item menu-close" href="#/app/contato">
                     <strong>Contato</strong>
-                    <p>Os eventos da semana</p>
                 </a>
-                <a class="item item-icon-left sidemenu-item menu-close" href="#/app/institucional">
-                    <span class="icon ion-android-home"></span>
+                <a class="item sidemenu-item menu-close" href="#/app/institucional">
                     <strong>Conheça a Pullse</strong>
-                    <p>Os eventos da semana</p>
+                </a>
+                <a class="item sidemenu-item menu-close" href="#/app/teste">
+                    <strong>Teste</strong>
                 </a>
             </ion-list>
 
     
-            <div style="margin: 15px 0;">
-                <a href="#/logout" class="button button-icon icon ion-power menu-close pull-right" style="color: #CCC;"></a>
+            <div class="sidemenu-footer">
+                <a
+                    href="#/logout"
+                    class="button button-icon menu-close">
+                    <span class="icon ion-power"></span>
+                </a>
+                <a
+                    href="#/logout"
+                    class="button button-icon menu-close">
+                    <span class="icon ion-ios-help"></span>
+                </a>
             </div>
 
         </ion-content>

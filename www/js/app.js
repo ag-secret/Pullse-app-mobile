@@ -5,26 +5,30 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', [
+    'LocalStorageModule',
+    'angular-preload-image',
+    'angularMoment',
     'ionic',
+    'ngCordova',
     'starter.controllers',
     'starter.models',
     'starter.utils',
-    'LocalStorageModule',
-    'ngCordova',
-    'angularMoment',
-    'angular-preload-image'
+    'starter.directives'
 ])
 
-.config(function($ionicConfigProvider) {
-    // $ionicConfigProvider.views.transition('ios');
-})
-
-.constant('PRODUCTION', true)
+.constant('PRODUCTION', false)
 // .constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
 .constant('WEBSERVICE_URL', 'http://bbgl.kinghost.net')
 .constant('FACEBOOK_APP_ID', 401554549993450)
 .constant('PUSH_NOTIFICATION_SENDER_ID', '552977488644')
 .constant('CLUB_ID', 1)
+
+.config(function($ionicConfigProvider) {
+    // $ionicConfigProvider.views.transition('ios');
+    if (ionic.Platform.platform() == 'ios') {
+        $ionicConfigProvider.backButton.text('Voltar');
+    }
+})
 
 .run(function(
     $cordovaPush,
@@ -36,9 +40,16 @@ angular.module('starter', [
 
     $ionicPlatform.ready(function() {
 
-        var config = {
-            'senderID': PUSH_NOTIFICATION_SENDER_ID,
-        };
+        var config = {};
+        if (ionic.Platform.isAndroid()) {
+            config = {
+                'senderID': PUSH_NOTIFICATION_SENDER_ID,
+            };
+        } else if(ionic.Platform.isIOS()) {
+            config = {
+                'senderID': 'APN AQUI!',
+            };
+        }
 
         if (PRODUCTION) {
             $cordovaPush.register(config).then(function(result) {
@@ -67,138 +78,146 @@ angular.module('starter', [
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
-  $stateProvider
-
-    .state('app', {
-        url: "/app",
-        abstract: true,
-        templateUrl: "templates/menu.html",
-        controller: 'AppController'
-    })
-
-    .state('app.lista-vip', {
-      url: "/lista-vip",
-      views: {
-        'menuContent': {
-          templateUrl: "templates/lista-vip.html",
-          controller: 'ListaVipController'
-        }
-      }
-    })
-    .state('app.eventos', {
-        url: "/eventos",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/eventos.html",
-                controller: 'EventosController'
+    
+    $stateProvider
+        .state('app', {
+            url: "/app",
+            abstract: true,
+            templateUrl: "templates/menu.html",
+            controller: 'AppController'
+        })
+        .state('app.teste', {
+            url: "/teste",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/teste.html",
+                    controller: 'TesteController'
+                }
             }
-        }
-    })
-    .state('app.checkin-main', {
-        url: "/checkin-main",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/checkin-main.html",
-                controller: 'CheckinMainController'
+        })
+        .state('app.lista-vip', {
+            url: "/lista-vip",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/lista-vip.html",
+                    controller: 'ListaVipController'
+                }
             }
-        }
-    })
-    .state('app.checkin-perfil', {
-        url: "/checkin-perfil/:id/:eventId",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/checkin-perfil.html",
-                controller: 'CheckinPerfilController'
+        })
+        .state('app.eventos', {
+            url: "/eventos",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/eventos.html",
+                    controller: 'EventosController'
+                }
             }
-        }
-    })
-    .state('tab.teste', {
-        url: "/teste",
-        views: {
-            'tab-teste': {
-                templateUrl: "templates/teste.html",
-                // controller: 'CheckinPerfilController'
+        })
+        .state('app.checkin-main', {
+            url: "/checkin-main",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/checkin-main.html",
+                    controller: 'CheckinMainController'
+                }
             }
-        }
-    })
-    .state('app.contato', {
-        url: "/contato",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/contato.html",
-                controller: 'ContatoController'
+        })
+        .state('app.checkin-perfil', {
+            url: "/checkin-perfil/:id/:eventId",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/checkin-perfil.html",
+                    controller: 'CheckinPerfilController'
+                }
             }
-        }
-    })
-    .state('app.checkin-hearts', {
-        url: "/checkin-hearts/:eventId/:flag",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/checkin-hearts.html",
-                controller: 'CheckinHeartsController'
+        })
+        .state('tab.teste', {
+            url: "/teste",
+            views: {
+                'tab-teste': {
+                    templateUrl: "templates/teste.html",
+                    // controller: 'CheckinPerfilController'
+                }
             }
-        }
-    })
-    .state('app.checkin-hearted-me', {
-        url: "/checkin-hearted-me/:eventId/:flag",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/checkin-hearted-me.html",
-                controller: 'CheckinHeartsController'
+        })
+        .state('app.contato', {
+            url: "/contato",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/contato.html",
+                    controller: 'ContatoController'
+                }
             }
-        }
-    })
-    .state('app.checkin-that-i-hearted', {
-        url: "/checkin-that-i-hearted/:eventId/:flag",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/checkin-that-i-hearted.html",
-                controller: 'CheckinHeartsController'
+        })
+        .state('app.checkin-hearts', {
+            url: "/checkin-hearts/:eventId/:flag",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/checkin-hearts.html",
+                    controller: 'CheckinHeartsController'
+                }
             }
-        }
-    })
-    .state('app.checkin-matches', {
-        url: "/checkin-matches/:eventId/:flag",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/checkin-matches.html",
-                controller: 'CheckinHeartsController'
+        })
+        .state('app.checkin-hearted-me', {
+            url: "/checkin-hearted-me/:eventId/:flag",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/checkin-hearted-me.html",
+                    controller: 'CheckinHeartsController'
+                }
             }
-        }
-    })
-    .state('app.checkin-busca', {
-        url: "/checkin-busca/:eventId",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/checkin-busca.html",
-                controller: 'CheckinBuscaController'
+        })
+        .state('app.checkin-that-i-hearted', {
+            url: "/checkin-that-i-hearted/:eventId/:flag",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/checkin-that-i-hearted.html",
+                    controller: 'CheckinHeartsController'
+                }
             }
-        }
-    })
-    .state('app.institucional', {
-        url: "/institucional",
-        views: {
-            'menuContent': {
-                templateUrl: "templates/institucional.html",
-                controller: 'InstitucionalController'
+        })
+        .state('app.checkin-matches', {
+            url: "/checkin-matches/:eventId/:flag",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/checkin-matches.html",
+                    controller: 'CheckinHeartsController'
+                }
             }
-        }
-    })
-    .state('login', {
-        url: "/login",
-        templateUrl: "templates/login.html",
-        controller: 'LoginController'
-    })
-    .state('logout', {
-        url: "/logout",
-        templateUrl: "templates/logout.html",
-        controller: 'LogoutController'
-    })
-    .state('dispatcher', {
-        url: "/dispatcher",
-        templateUrl: "templates/dispatcher.html",
-        controller: 'DispatcherController'
-    });
+        })
+        .state('app.checkin-busca', {
+            url: "/checkin-busca/:eventId",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/checkin-busca.html",
+                    controller: 'CheckinBuscaController'
+                }
+            }
+        })
+        .state('app.institucional', {
+            url: "/institucional",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/institucional.html",
+                    controller: 'InstitucionalController'
+                }
+            }
+        })
+        .state('login', {
+            url: "/login",
+            templateUrl: "templates/login.html",
+            controller: 'LoginController'
+        })
+        .state('logout', {
+            url: "/logout",
+            templateUrl: "templates/logout.html",
+            controller: 'LogoutController'
+        })
+        .state('dispatcher', {
+            url: "/dispatcher",
+            templateUrl: "templates/dispatcher.html",
+            controller: 'DispatcherController'
+        });
     // if none of the above states are matched, use this as the fallback
     $urlRouterProvider.otherwise('/dispatcher');
 });
