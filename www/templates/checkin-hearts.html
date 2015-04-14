@@ -7,9 +7,7 @@
 			on-refresh="loadPerfis('refresher')">
 		</ion-refresher>
 		<!-- Loader que ocorre quando entra na view -->
-		<div ng-show="loading">
-			<ion-spinner></ion-spinned> Carregando...
-		</div>
+		<my-loader></my-loader>
 		<!-- Lista com os perfis -->
 		<ion-list>
 			<ion-item
@@ -23,7 +21,7 @@
 				<p ng-if="perfil.combination_created">
 					<span am-time-ago="perfil.combination_created"></span>
 				</p>
-				 <span class="icon ion-email-unread" ng-if="perfil.message"></span>
+				 <span class="icon ion-email-unread positive" ng-if="perfil.message"></span>
 			</ion-item>
 		</ion-list>
 		<!-- Mostra caso ninguem te curtiu ainda -->

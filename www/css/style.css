@@ -24,6 +24,11 @@
   src: url("../fonts/HelveticaNeue-Light.eot") format("embedded-opentype"), url("../fonts/HelveticaNeue-Light.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "HelveticaNeue Bold";
+  src: url("../fonts/HelveticaNeue-Bold.otf") format("opentype"), url("../fonts/HelveticaNeue-Bold.ttf") format("truetype");
+}
+
 body{
 	font-family: "HelveticaNeue"!important;
 }
@@ -141,9 +146,9 @@ a.sidemenu-item, a.sidemenu-item p {
 .btn-login{
 	color: white;
 	border: solid 2px white;
-	padding: 18px 10px;
+	padding: 15px 10px;
 	background-color: rgba(0, 0, 0, 0);
-	font-size: 24px;
+	font-size: 22px;
 	font-weight: bold;
 	width: 100%;
 	border-radius: 4px;
@@ -318,21 +323,22 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', e
 .list .item a{
 	background-color: rgba(0, 0, 0, 0);
 }
-.list .item, .list .item a p, .list .item a h2{
+.list .item, .list .item h2, .list .item p, .list .item a p, .list .item a h2{
 	color: #FFF;
 }
 
 /*MODAL*/
 .modal{
-	width: 94%;
+/*	width: 94%;
 	margin-left: 3%;
-	margin-top: 60%;
+	margin-top: 60%;*/
 	background-color: #131012!important;
-	color: #CCC!important;
+	color: #FFF!important;
 	font-weight: bold;
+	font-size: 15px;
 }
 .modal .bar h1.title{
-	color: #CCC!important;
+	color: #FFF!important;
 }
 .modal .bar{
 	background-color: #131012!important;
@@ -408,4 +414,62 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', e
 	font-size: 70px;
 	border-radius: 140%;
 	border: 10px rgba(0, 0, 0, 0.3) solid;
+}
+
+/*LOADER*/
+.loader-cont{
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+/*REFRESHER*/
+.scroll-refresher p{
+	color: #FFF!important;
+}
+
+.btn-custom{
+	background-color: #d61277;
+	border: 0;
+	padding: 6px 24px;
+	color: #FFF;
+	font-weight: bold;	
+	font-family: "HelveticaNeue";
+	font-size: 16px;
+	border-radius: 30px;
+	text-align: center;
+}
+
+.btn-checkin, .btn-novas-pessoas{
+	background-color: #d61277;
+	border: 0;
+	padding: 6px;
+	position: absolute;
+	bottom: 0;
+	width: 200px;
+	margin-left: -100px;
+	left: 50%;
+	margin-bottom: 30px;
+	color: #FFF;
+	font-weight: bold;	
+	font-family: "HelveticaNeue";
+	font-size: 16px;
+	border-radius: 200px;
+	text-align: center;
+}
+.btn-novas-pessoas{
+	top: 0;
+	margin-bottom: 0;
+	margin-top: 120px;
+	bottom: auto;
+	font-size: 14px;
+	width: 180px;
+	margin-left: -90px;
+}
+.custom-alert{
+	text-align: center;
+	padding: 20px;
+	border-radius: 6px;
+	background-color: rgba(0, 0, 0, 0.5);
+	font-size: 18px;
+	color: #FFF;
+	margin: 10px;
 }

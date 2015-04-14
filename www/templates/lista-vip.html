@@ -2,11 +2,10 @@
 	<!-- Início do conteúdo -->
 	<ion-content class="content">
 		<!-- Loading do carregamento inicial -->
-		<div ng-show="loading">
-			<ion-spinner></ion-spinner> Carregando dados...
-		</div>
+		<my-loader></my-loader>
 		<!-- Refresher -->
 		<ion-refresher
+			spinner="ripple"
 			ng-if="!loading"
 			pulling-text="Puxe para atualizar..."
 			on-refresh="getLists('refresh')">
@@ -14,7 +13,10 @@
 		<!-- Lista fazendo um loop na variavel listas -->
 		<ion-list>
 			<ion-item collection-repeat="lista in listas" ng-click="openModal(lista)">
-				{{lista.name}}
+				<h2>
+					{{lista.name}}
+				</h2>
+				<p>Lista encerra em 3 horas</p>
 			</ion-item>
 		</ion-list>
 		<h2 ng-show="noLists" style="color: white;">Nenhuma lista encontrada!</h2>

@@ -343,6 +343,7 @@ angular.module('starter.controllers', [])
 	$ionicPlatform,
 	$state,
 	$timeout,
+	DEFAULT_ROUTE,
 	Me,
 	localStorageService
 ){
@@ -351,7 +352,7 @@ angular.module('starter.controllers', [])
 	console.log(me);
 	if (me) {
 		Me.data = me;
-		$state.go('app.checkin-main');
+		$state.go(DEFAULT_ROUTE);
 	} else {
 		$state.go('login');
 	}
@@ -945,7 +946,9 @@ angular.module('starter.controllers', [])
 		 */
 		$scope.loading = true;
 
-		$scope.getStatus();
+		$timeout(function(){
+			$scope.getStatus();
+		}, 1000);
 	});
 
 	$scope.canLike = function(){

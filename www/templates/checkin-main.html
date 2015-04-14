@@ -8,8 +8,21 @@
 	    	<span class="icon ion-android-search"></span>
 	    </button>
     </ion-nav-buttons>
+    <div class="bar bar-subheader bar-stable" ng-show="currentEvent">
+		<div class="button-bar">
+			<a href="#/app/checkin-hearted-me/{{currentEvent.id}}/1" class="button button-dark" style="background-color: #131012">
+				Me curtiram
+			</a>
+			<a href="#/app/checkin-that-i-hearted/{{currentEvent.id}}/2" class="button button-dark" style="background-color: #131012">
+				Eu curti
+			</a>
+			<a href="#/app/checkin-matches/{{currentEvent.id}}/3" class="button button-dark" style="background-color: #131012">
+				Combinações
+			</a>
+		</div>
+    </div>
 
-	<div
+<!-- 	<div
 		class="tabs tabs-top tabs-dark"
 		style="background-color: #131012!important; color: #FFF!important"
 		ng-show="currentEvent">
@@ -28,7 +41,7 @@
 			class="tab-item" href="#/app/checkin-matches/{{currentEvent.id}}/3">
 			Combinações
 		</a>
-	</div>
+	</div> -->
 
 	<ion-content class="content" ng-class="{'has-subheader': currentEvent}">
 
@@ -38,13 +51,12 @@
 			on-refresh="doPullToRefresh()">
 		</ion-refresher>
 
-		<div ng-show="loading" style="color: white;">
-			<ion-spinner style="font-color: 30px;"></ion-spinned> Carregando...
-		</div>
-		<div ng-show="alertNoEvents">
-			<h1 style="color: white;">Não tem nenhum evento rolando agora...</h1>
-			<button type="button" class="button button-positive" ng-click="getCurrentEventByButton()">
-				Clique aqui para tentar buscar novamente
+		<my-loader></my-loader>
+		
+		<div ng-show="alertNoEvents" class="custom-alert">
+			Não tem nenhum evento rolando agora...
+			<button type="button" class="btn-custom" ng-click="getCurrentEventByButton()" style="margin-top: 20px;">
+				Buscar novamente
 			</button>
 		</div>
 
@@ -58,20 +70,20 @@
 						style="width: 100%;height: auto!important;">
 				</a>
 			</div>
-			<div ng-show="currentEvent && alertNoProfiles">
-				<h2 style="color: white;">Ninguem fez checkin ainda</h2>
+			<div class="custom-alert" ng-show="!currentEvent">
+				Ninguem fez checkin ainda.
 			</div>
 		</div>
 
 	</ion-content>
 
 	<div ng-show="hasNewProfiles"
-		style="z-index: 999;background-color: red;color: white;position: absolute; left: 50%; margin-left: -50px; width: 100px; margin-top: 140px;" ng-click="refreshProfiles()">
-		Novas pessoas
+		class="btn-novas-pessoas" ng-click="refreshProfiles()">
+		Novas pessoas entraram
 	</div>
 
-	<button type="button" class="btn-rounded btn-fixed-bottom-right" ng-click="doCheckin()" ng-if="showCheckinButton">
-		<span class="icon ion-ios-location"></span>
+	<button type="button" class="btn-checkin" ng-click="doCheckin()" ng-if="showCheckinButton">
+		Entrar na festa
 	</button>
 
 </ion-view>

@@ -9,4 +9,11 @@ angular.module('starter.directives', [])
 			element.css('height', (windowH)  + 'px');
 		}
 	};
+})
+.directive('myLoader', function($window){
+	return {
+		templateUrl: function(elem, attr){
+			return 'templates/elements/loader.html';
+		}
+	};
 });

@@ -5,7 +5,7 @@
             </ion-nav-back-button>
 
             <ion-nav-buttons side="left">
-                <button class="button button-icon button-clear ion-android-menu btn-sidemenu-toggle" menu-toggle="left"></button>
+                <button class="button button-icon button-clear ion-navicon btn-sidemenu-toggle" menu-toggle="left"></button>
             </ion-nav-buttons>
         </ion-nav-bar>
         <ion-nav-view name="menuContent" ></ion-nav-view>
@@ -15,7 +15,10 @@
         <ion-content class="content">
             <div class="text-center sidemenu-header">
                 <div class="sidemenu-avatar-wrap">
-                    <img ng-src="https://graph.facebook.com/{{me.facebook_uid}}/picture?width=140&height=140" class="sidemenu-avatar">
+                    <img
+                        preload-image
+                        default-image="img/preload-placeholder.jpg"
+                        ng-src="https://graph.facebook.com/{{me.facebook_uid}}/picture?width=140&height=140" class="sidemenu-avatar">
                 </div>
                 <div class="sidemenu-name">
                    {{ me.name }}

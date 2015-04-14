@@ -7,9 +7,7 @@
 			on-refresh="loadPerfis('refresher')">
 		</ion-refresher>
 		<!-- Loader que ocorre quando entra na view -->
-		<div ng-show="loading">
-			<ion-spinner></ion-spinned> Carregando...
-		</div>
+		<my-loader></my-loader>
 		<!-- Lista com os perfis -->
 		<ion-list>
 			<ion-item

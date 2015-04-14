@@ -5,6 +5,8 @@
 				<div class="col col-center">
 					<div class="profile-avatar-wrap">
 						<img
+							preload-image
+							default-image="img/preload-placeholder.jpg"
 							ng-src="https://graph.facebook.com/{{profile.facebook_uid}}/picture?width=300&height=300" 
 							class="profile-avatar">
 					</div>
@@ -13,9 +15,9 @@
 				</div>
 			</div>
 		</div>
-<!-- 		<div ng-if="loading">
-			Carregando...
-		</div> -->
+
+		<my-loader></my-loader>
+		
 		<div ng-if="!loading" class="text-center" style="height: 40%;">
 			<span class="label-dark" ng-show="heartMe && !thatIHeart">Curtiu você</span>
 			<span class="label-dark" ng-show="thatIHeart && !heartMe">Você curtiu</span>

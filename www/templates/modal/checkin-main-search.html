@@ -6,13 +6,23 @@
 		</button>
 	</ion-header-bar>
 
-	<div class="bar bar-subheader">
+<!-- 	<div class="bar bar-subheader">
 		<input type="text" ng-model="search" placeholder="Pesquisar por nome..."
 			style="background-color: rgba(255, 255, 255, 0.1); margin-top: -2px; width: 100%;padding-left: 35px;" id="input-search">
 		<span class="icon ion-search" style="position: absolute; top: 0; margin-top: 12px; margin-left: 10px; font-size: 20px;color: #CCC;"></span>
-	</div>
+	</div> -->
 
-	<ion-content class="has-subheader">
+<div class="bar bar-header item-input-inset">
+  <label class="item-input-wrapper">
+    <span class="icon ion-ios-search placeholder-icon"  style="font-size: 22px;"></span>
+    <input type="search" ng-model="search" placeholder="Pesquisar por nome..." style="height: 40px;">
+  </label>
+	<button class="button button-clear button-icon" ng-click="closeModal()">
+		<span class="icon ion-android-close"></span>
+	</button>
+</div>
+
+	<ion-content class="">
 		<ion-list ng-if="search">
 			<a
 				class="item item-avatar repeated-item"

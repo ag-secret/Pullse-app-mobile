@@ -17,11 +17,12 @@ angular.module('starter', [
 ])
 
 .constant('PRODUCTION', false)
-// .constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
-.constant('WEBSERVICE_URL', 'http://bbgl.kinghost.net')
+.constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
+// .constant('WEBSERVICE_URL', 'http://bbgl.kinghost.net')
 .constant('FACEBOOK_APP_ID', 401554549993450)
 .constant('PUSH_NOTIFICATION_SENDER_ID', '552977488644')
 .constant('CLUB_ID', 1)
+.constant('DEFAULT_ROUTE', 'app.checkin-main')
 
 .config(function($ionicConfigProvider) {
     // $ionicConfigProvider.views.transition('ios');
