@@ -1,6 +1,7 @@
 <ion-view title="Eventos">
 	<ion-nav-buttons side="right">
 	    <button
+	    	ng-if="!loading"
 	    	type="button"
 	    	class="button button-clear"
 	    	ng-click="getEvents()">
@@ -8,33 +9,36 @@
 	    </button>
     </ion-nav-buttons>
 	<ion-content class="content">
+
 		<my-loader></my-loader>
 
-		<div class="" style="height: 100%;">
-			<ion-slide-box style="height: 100%;">
-				<ion-slide ng-repeat="event in events" ng-click="openModal(event)" does-continue="false" style="height: 100%;background-image: url(img/stronda.jpg); background-size: auto 80%; background-position: top center" class="eventos">
-					<div class="eventos-footer">
-						<h3>{{event.name}}</h3>
-						<h1 style="font-weight: bold;">15/03</h1>
+		<div ng-show="alertNoEvents" class="custom-alert">
+			Nenhum evento no momento.
+		</div>	
+
+		<ion-slide-box style="height: 100%;position: relative;" ng-if="events.length > 0" show-pager="false">
+			<ion-slide
+				ng-repeat="event in events"
+				style="height: 100%; background-color: #111;"
+				class="eventos">
+
+				<preload-bg
+					url="{{imgBaseUrl}}/img/events/{{event.id}}/{{event.imagem_capa}}"
+					style="width: 100%; top: 0; height: 80%;background-size: cover; background-position: top center; position: absolute;">
+				</preload-bg>
+
+				<div class="eventos-footer">
+					<div class="event-name">
+						{{event.name}}
+					</div>
+					<div class="event-date">
+						{{ event.data_inicio | amDateFormat: 'DD/MM' }}
+					</div>
+					<div class="event-button">
 						<span class="icon ion-ios-plus-outline" ng-click="openModal(event)"></span>
 					</div>
-				</ion-slide>
-			</ion-slide-box>
-		</div>
-
-
-<!-- 		<div ng-show="loading">
-			<ion-spinner></ion-spinner>
-		</div>
-		<h2 ng-show="alertNoEvents" style="color: white;">
-			Sem eventos
-		</h2>	
-		<ion-slide-box>
-			<ion-slide ng-repeat="event in events" ng-click="openModal(event)" does-continue="false">
-				<div
-					style="width: 100%; height: 500px; background-color: #EEE;  background-position: top center; background-size: cover;background-image: url({{imgBaseUrl}}/img/events/{{event.id}}/{{event.imagem_capa}})"></div>
-				<h3>{{event.data_inicio}}</h3>
+				</div>
 			</ion-slide>
-		</ion-slide-box> -->
+		</ion-slide-box>
 	</ion-content>
 </ion-view>

@@ -18,5 +18,8 @@
     "org.apache.cordova.network-information",
     "org.apache.cordova.geolocation",
     "org.apache.cordova.dialogs"
+  ],
+  "cordovaPlatforms": [
+    "android"
   ]
 }

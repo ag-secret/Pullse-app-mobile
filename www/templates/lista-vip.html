@@ -13,13 +13,19 @@
 		<!-- Lista fazendo um loop na variavel listas -->
 		<ion-list>
 			<ion-item collection-repeat="lista in listas" ng-click="openModal(lista)">
+				<span class="item-note">{{ lista.data_inicio | amDateFormat: 'dddd' }}</span>
 				<h2>
 					{{lista.name}}
 				</h2>
-				<p>Lista encerra em 3 horas</p>
+				<span class="item-note">
+					{{ lista.data_inicio | amDateFormat: 'DD/MM' }}
+				</span>
+				<p>Lista encerra <span am-time-ago="lista.lista_vip_dt_fim"></span></p>
 			</ion-item>
 		</ion-list>
-		<h2 ng-show="noLists" style="color: white;">Nenhuma lista encontrada!</h2>
+		<div class="custom-alert" ng-if="noLists">
+			Nenhuma lista encontrada.
+		</div>
 	<!-- Fim do conteúdo -->
 	</ion-content>
 </ion-view>

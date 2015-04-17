@@ -171,6 +171,7 @@ angular.module('starter.controllers', [])
 				$timeout(function(){
 					Evento.getLists($scope.page)
 						.then(function(result){
+							console.log(result);
 							$scope.listas = Evento.listas;
 							$scope.noLists = $scope.listas.length === 0 ? true : false;
 						})
@@ -276,10 +277,10 @@ angular.module('starter.controllers', [])
 	 * foi chamado
 	 */
 	$scope.getEvents = function(){
+		$scope.events = [];
+		$scope.loading = true;
 		Network.check()
 			.then(function(result){
-				$scope.loading = false;
-				$scope.events = [];
 				$ionicSlideBoxDelegate.update();
 				$scope.loading = true;
 				$timeout(function(){
@@ -320,6 +321,9 @@ angular.module('starter.controllers', [])
 				 * caso a internet falhe
 				 */
 				$scope.loading = false;
+				if ($scope.events.length === 0) {
+					$scope.alertNoEvents = true;
+				}
 			});
 	};
 	/**
@@ -349,7 +353,6 @@ angular.module('starter.controllers', [])
 ){
 	
 	var me = localStorageService.get('Me');
-	console.log(me);
 	if (me) {
 		Me.data = me;
 		$state.go(DEFAULT_ROUTE);
@@ -1078,43 +1081,33 @@ angular.module('starter.controllers', [])
  * o texto não será apagado.
  */
 .controller('ContatoController', function(
-	$cordovaToast,
-	$ionicLoading,
 	$scope,
-	$timeout,
-	Contato,
-	Network
+	Contato
 ) {
 	/**
 	 * É executado quando usuario aperta o botão de enviar o contato 
 	 */
 	$scope.save = function(){
-		Network.check()
+		Contato.save({mensagem: $scope.mensagem})
 			.then(function(){
-				$ionicLoading.show({
-					template: 'Enviando contato...'
-				});
 				/**
-				 * Espera um tempo antes de fazer a requisição ao servidor para que
-				 * o usuario veja a tela de loading ao menos um pouco, se a requisição 
-				 * ao servidor responder muito rapido a tela de loading apenas piscará na tela
-				 * dando um efeito estranho.
+				 * Reseta o texto da caixa de texto.
 				 */
-				$timeout(function(){
-					Contato.add({mensagem: $scope.mensagem})
-						.then(function(result){
-							/**
-							 * Reseta o texto da caixa de texto.
-							 */
-							$scope.mensagem = null;
-						})
-						.finally(function(){
-							$ionicLoading.hide();
-						});
-				}, 1000);
+				$scope.mensagem = null;
 			});
 	};
 })
+
+.directive('teste', function($window){
+	return {
+		link: function(scope, element, attrs){
+			var h = element.parent();
+			h = h[0].offsetHeight;
+			element.css({height: (h - 30) + 'px'});
+		}
+	};
+})
+
 .controller('LogoutController', function(
 	localStorageService,
 	$state,

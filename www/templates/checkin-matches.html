@@ -2,6 +2,7 @@
 	<ion-content class="content">
 		<!-- Refresher só fica habilitado quando não está fazendo o load -->
 		<ion-refresher
+			spinner="ripple"
 			ng-if="!loading"
 			pulling-text="Puxe para atualizar..."
 			on-refresh="loadPerfis('refresher')">
@@ -25,8 +26,8 @@
 			</ion-item>
 		</ion-list>
 		<!-- Mostra caso ninguem te curtiu ainda -->
-		<div ng-show="noPeople">
-			<h1 style="color: #FFF;">Nenhuma pessoa</h1>
+		<div class="custom-alert" ng-show="noPeople">
+			Você ainda não tem combinações.
 		</div>
 	</ion-content>
 </ion-view>

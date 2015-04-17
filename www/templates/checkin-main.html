@@ -10,13 +10,13 @@
     </ion-nav-buttons>
     <div class="bar bar-subheader bar-stable" ng-show="currentEvent">
 		<div class="button-bar">
-			<a href="#/app/checkin-hearted-me/{{currentEvent.id}}/1" class="button button-dark" style="background-color: #131012">
+			<a href="#/app/checkin-hearted-me/{{currentEvent.id}}/1" class="button button-dark" style="background-color: #131012; font-weight: bold!important">
 				Me curtiram
 			</a>
-			<a href="#/app/checkin-that-i-hearted/{{currentEvent.id}}/2" class="button button-dark" style="background-color: #131012">
+			<a href="#/app/checkin-that-i-hearted/{{currentEvent.id}}/2" class="button button-dark" style="background-color: #131012; font-weight: bold!important">
 				Eu curti
 			</a>
-			<a href="#/app/checkin-matches/{{currentEvent.id}}/3" class="button button-dark" style="background-color: #131012">
+			<a href="#/app/checkin-matches/{{currentEvent.id}}/3" class="button button-dark" style="background-color: #131012; font-weight: bold!important">
 				Combinações
 			</a>
 		</div>
@@ -46,6 +46,7 @@
 	<ion-content class="content" ng-class="{'has-subheader': currentEvent}">
 
 		<ion-refresher
+			spinner="ripple"
 			ng-if="currentEvent && !loading"
 			pulling-text="Puxe para atualizar..."
 			on-refresh="doPullToRefresh()">
@@ -70,8 +71,8 @@
 						style="width: 100%;height: auto!important;">
 				</a>
 			</div>
-			<div class="custom-alert" ng-show="!currentEvent">
-				Ninguem fez checkin ainda.
+			<div class="custom-alert" ng-show="!currentEvent && !alertNoEvents">
+				Ninguém fez checkin ainda.
 			</div>
 		</div>
 

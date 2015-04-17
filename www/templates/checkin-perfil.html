@@ -16,12 +16,18 @@
 			</div>
 		</div>
 
-		<my-loader></my-loader>
+		<div class="text-center" ng-if="loading">
+			<ion-spinner icon="ripple"></ion-spinner>
+		</div>
 		
 		<div ng-if="!loading" class="text-center" style="height: 40%;">
 			<span class="label-dark" ng-show="heartMe && !thatIHeart">Curtiu você</span>
 			<span class="label-dark" ng-show="thatIHeart && !heartMe">Você curtiu</span>
 			<span class="label-dark" ng-show="heartMe && thatIHeart">Combinaram</span>
+
+			<div class="label-dark" ng-show="!canLike()">
+				Você não pode curtir por que ainda não fez o checkin.
+			</div>
 
 			<button
 				ng-disabled="!canLike()"
@@ -32,10 +38,6 @@
 
 				<span class="icon ion-heart"></span>
 			</button>
-			
-			<div ng-show="!canLike()">
-				Você nao pode curtir pq nao fez checkin
-			</div>
 
 			<div ng-if="message" class="padding">
 				<div class="profile-message-sender">
@@ -46,7 +48,7 @@
 						{{profile.name}} disse:
 					</span>
 				</div>
-				<p class="profile-message">
+				<p class="profile-message bubble">
 					{{message}}
 					<br>
 					<span am-time-ago="messageCreated"></span>

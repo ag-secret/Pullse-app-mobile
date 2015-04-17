@@ -16,25 +16,28 @@ angular.module('starter', [
     'starter.directives'
 ])
 
-.constant('PRODUCTION', false)
-.constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
-// .constant('WEBSERVICE_URL', 'http://bbgl.kinghost.net')
+.constant('PRODUCTION', true)
+// .constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
+.constant('WEBSERVICE_URL', 'http://bbgl.kinghost.net')
 .constant('FACEBOOK_APP_ID', 401554549993450)
 .constant('PUSH_NOTIFICATION_SENDER_ID', '552977488644')
 .constant('CLUB_ID', 1)
-.constant('DEFAULT_ROUTE', 'app.checkin-main')
+.constant('DEFAULT_ROUTE', 'app.lista-vip')
 
 .config(function($ionicConfigProvider) {
-    // $ionicConfigProvider.views.transition('ios');
+    $ionicConfigProvider.views.transition('none');
     if (ionic.Platform.platform() == 'ios') {
         $ionicConfigProvider.backButton.text('Voltar');
     }
 })
 
 .run(function(
+    $cordovaLocalNotification,
     $cordovaPush,
+    $ionicHistory,
     $ionicPlatform,
     $rootScope,
+    $state,
     PRODUCTION,
     PUSH_NOTIFICATION_SENDER_ID
 ) {
@@ -54,6 +57,7 @@ angular.module('starter', [
 
         if (PRODUCTION) {
             $cordovaPush.register(config).then(function(result) {
+                alert('registrou');
             }, function(err) {
             });
         }
@@ -62,6 +66,21 @@ angular.module('starter', [
             switch(notification.event) {
                 case 'message':
                     // Entra aqui quando recebe um mensagem
+                    alert('Recebeu');
+                    alert(notification.collapse_key);
+                    if (notification.collapse_key == 'combination' || notification.collapse_key == 'like') {
+                        $ionicHistory.nextViewOptions({
+                            disableBack: true
+                        });
+                        $state.go('app.checkin-main');
+                    }
+                    $cordovaLocalNotification.add({
+                        id: notification.payload.notId,
+                        title: notification.payload.title,
+                        message: notification.payload.message,
+                    }).then(function () {
+                        console.log('callback for adding background notification');
+                    });
                 break;
             }
         });

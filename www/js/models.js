@@ -1,7 +1,47 @@
 angular.module('starter.models', [])
 
 .constant('COMMUNICATION_ERROR_MESSAGE', 'Erro na comunicação com o servidor, favor tentar novamente.')
-.constant('COMMUNICATION_TIMEOUT', 35000)
+.constant('COMMUNICATION_TIMEOUT', 15000)
+
+// .factory('myHttpInterceptor', function($q, $log) {
+//   return {
+//     // optional method
+//     request: function(config) {
+//      	// do something on success
+//      	return config;
+//     },
+
+//     // optional method
+//    'requestError': function(rejection) {
+//       // do something on error
+//       if (canRecover(rejection)) {
+//         return responseOrNewPromise;
+//       }
+//       return $q.reject(rejection);
+//     },
+
+
+
+//     // optional method
+//     'response': function(response) {
+//       // do something on success
+//       return response;
+//     },
+
+//     // optional method
+//    'responseError': function(rejection) {
+//       // do something on error
+//       if (canRecover(rejection)) {
+//         return responseOrNewPromise;
+//       }
+//       return $q.reject(rejection);
+//     }
+//   };
+// })
+
+// .config(['$httpProvider', function($httpProvider) {  
+//     $httpProvider.interceptors.push('myHttpInterceptor');
+// }])
 
 .factory('Util', function(
 	$cordovaToast,
@@ -18,10 +58,10 @@ angular.module('starter.models', [])
 		handleRequestError: function(code){
 			switch(code){
 				case 0:
-					$cordovaToast.show('O servidor demorou muita para responder, favor tentar novamente.', 'long', 'bottom');
+					$cordovaToast.show('O servidor demorou muito para responder, favor tentar novamente.', 'long', 'bottom');
 					break;
 				case 401:
-					$cordovaToast.show('A sua sessão expirou, favor logar novamente.', 'long', 'bottom');
+					$cordovaToast.show('A sua sessão expirou, favor logar novamente.', 'short', 'bottom');
 					$state.go('logout');
 					break;
 				default:
@@ -85,8 +125,8 @@ angular.module('starter.models', [])
 				.success(function(result){
 					defer.resolve(result);
 				})
-				.error(function(){
-					defer.reject();
+				.error(function(data){
+					defer.reject(data);
 				});
 
 			return defer.promise;
@@ -111,16 +151,16 @@ angular.module('starter.models', [])
 						.then(function(facebookToken){
 							// alert('Regid: ' + regid);
 							// alert('facebookToken: ' + facebookToken);
-							
+							// alert('Pegando user');
 							_this.getUser(regid, facebookToken)
 								.then(function(result){
+									// alert('Deu boa');
 									// alert(JSON.stringify(result));
 									defer.resolve(result);
 								}, function(err){
+									// alert('Deu ruim');
+									// alert(JSON.stringify(err));
 									defer.reject();
-								})
-								.finally(function(){
-									
 								});
 
 						}, function(err){
@@ -149,7 +189,6 @@ angular.module('starter.models', [])
 			$ionicPlatform.ready(function() {
 				// alert('Etrou no platform ready');
 	            $cordovaOauth.facebook(FACEBOOK_APP_ID, [scope]).then(function(result) {
-	            	// alert('Voltou do facebook api');
 	                defer.resolve(result.access_token);
 	                
 	            /**
@@ -465,9 +504,12 @@ angular.module('starter.models', [])
 
 .factory('Contato', function(
 	$cordovaToast,
+	$ionicLoading,
+	$timeout,
 	$http,
 	$q,
 	$state,
+	Network,
 	COMMUNICATION_ERROR_MESSAGE,
 	COMMUNICATION_TIMEOUT,
 	Me,
@@ -480,24 +522,37 @@ angular.module('starter.models', [])
 		 * @param {message: string} data Contém a mensagem a ser enviada
 		 *                       
 		 */
-		add: function(data){
+		save: function(data){
 			var params = Util.setAuthCredentials({});
 			var defer = $q.defer();
 
-			$http({
-				method: 'post',
-				url: WEBSERVICE_URL + '/messages',
-				params: params,
-				data: data,
-				timeout: COMMUNICATION_TIMEOUT
-			})
-			.success(function(){
-				defer.resolve();
-			})
-			.error(function(data, code){
-				Util.handleRequestError(code);
-				defer.reject();
+			$ionicLoading.show({
+				template: 'Enviando contato...'
 			});
+			Network.check()
+				.then(function(result){
+					var duration = 3000;
+					$timeout(function(){
+						$http({
+							method: 'post',
+							url: WEBSERVICE_URL + '/messages',
+							params: params,
+							data: data,
+							timeout: COMMUNICATION_TIMEOUT
+						})
+						.success(function(){
+							$cordovaToast.show('Contato enviado, obrigado.', 'short', 'bottom');
+							defer.resolve();
+						})
+						.error(function(data, code){
+							Util.handleRequestError(code);
+							defer.reject();
+						})
+						.finally(function(){
+							$ionicLoading.hide();
+						});
+					}, duration);
+				});
 			return defer.promise;
 		}
 	};
@@ -582,22 +637,18 @@ angular.module('starter.models', [])
 			.success(function(data){
 				defer.resolve(data);
 			})
-			.error(function(data, code){
+			.error(function(data, status){
 				/**
 				 * Se der o erro 403 significa que a inscrição foi rejeitada,
-				 * por algum motivo (vagas esgotadas, imcompatibilidade de genero etc)
+				 * por algum motivo (vagas esgotadas, incompatibilidade de genero etc)
 				 * é importante lembrar que se der outro erro, normalmente o 400
 				 * é por que deu algum erro no servidor e entao mostramos a Toast padrão
 				 * para esse tipo de situação
 				 */
-				if (code == 403) {
+				if (status == 403) {
 					$ionicPlatform.ready(function(){
 						$cordovaDialogs.alert(data.message, 'Aviso!', 'OK');
 					});
-					// var alertPopup = $ionicPopup.alert({
-					// 	title: 'Aviso!',
-					// 	template: data.message
-					// });
 				} else {
 					Util.handleRequestError(code);	
 				}
@@ -662,7 +713,9 @@ angular.module('starter.models', [])
 							defer.reject();
 						});
 					}, function(err) {
-						$cordovaToast.show('Erro ao detectar a sua localização, certifique-se que a localização do seu dispositivo está habiulitada.', 'long', 'bottom');
+						$ionicPlatform.ready(function(){
+							$cordovaDialogs.alert('Erro ao detectar a sua localização, certifique-se que a localização em alta precisão do seu dispositivo está habilitada.', 'Aviso!', 'OK');
+						});
 						defer.reject();
 					});
 			});

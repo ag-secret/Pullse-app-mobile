@@ -1,30 +1,72 @@
 <ion-view cache-view="false">
-	<ion-content class="content-login" >
-			<div style="height: 80%; background-color: ">
-				<ion-slide-box class="text-center" show-pager="true" style="height: 100%;">
-					<ion-slide>
-						<div class="row" style="height: 100%">
-							<div class="col col-center">
-								<div class="box blue"><h1>BLUE</h1></div>		
-							</div>
+	<ion-content class="content-login" scrollbar-y="false">
+		<div style="height: 80%; width: 100%; background-color: pink; ">
+			<ion-slide-box style="height: 100%">
+				<ion-slide style="height: 100%;">
+					<div class="row" style="height: 100%;">
+						<div class="col col-center">
+							dsa
 						</div>
+					</div>
+				</ion-slide>
+			</ion-slide-box>
+		</div>
+		<div style="height: 20%; width: 100%; ">
+			<div ng-if="showFakeLogin">
+				<input type="text" placeholder="ID" style="width: 100%;" ng-model="userId">
+				<button type="button" class="button button-royal button-full" ng-click="doLoginTeste(userId)">Logar com o id acima</button>
+			</div>
+			<div class="row" style="height: 100%;" on-hold="showFakeLogin = true">
+				<div class="col col-center">
+					<button type="button" class="btn-login" ng-click="doLogin()">
+						Entrar com Facebook
+					</button>	
+				</div>
+			</div>
+		</div>
+
+<!-- 			<ion-slide-box style="background-color: pink;width: 100%;position: absolute;" teste>
+				<ion-slide style="height: 100%;">
+					oi
+					<br>
+					br
+				</ion-slide>
+			</ion-slide-box> -->
+<!-- 			<div style="height: 20%; width: 100%;bottom: 0; position: absolute; background-color: green;">
+	 			<div class="row" style="height: 100%;">
+					<div class="col col-center">
+						<button type="button" class="btn-login" ng-click="doLogin()">
+							Entrar com Facebook
+						</button>	
+				</div>
+			</div> -->
+<!-- 			<div style="height: 80%;position: relative;">
+				<ion-slide-box style="height: 100%!important;width: 100%!important;position: absolute; top: 0; bottom: 0; left: 0; left: 0; background-color: pink;">
+					<ion-slide style="height: 100%">
+						oi
 					</ion-slide>
-					<ion-slide>
-						<div class="row" style="height: 100%">
-							<div class="col col-center">
-								<div class="box blue"><h1>BLUE</h1></div>		
-							</div>
-						</div>
+					<ion-slide style="height: 100%">
+						oi
 					</ion-slide>
 				</ion-slide-box>
 			</div>
-			<div class="row" style="height: 20%;">
+<!-- 			<ion-slide-box class="text-center" show-pager="true" style="height: 80%;">
+				<ion-slide  style="height: 100%">
+					<div class="row" style="height: 100%">
+						<div class="col col-center">
+							<div class="box blue"><h1>BLUE</h1></div>		
+						</div>
+					</div>
+				</ion-slide>
+			</ion-slide-box> -->
+<!-- 			<div class="row" style="height: 20%;">
 				<div class="col col-center">
 					<button type="button" class="btn-login">
 						Entrar com Facebook
 					</button>	
 				</div>
-			</div>
+			</div> -->
+		
 <!-- 			<div class="login-footer" style="height: 10%;">
 				<div class="row" style="height: 100%;">
 					<div class="col col-center text-right">
@@ -67,7 +109,7 @@
 				</div>
 			</div> -->
 
-		<button href="#/app/eventos" type="button" class="button button-positive button-icon-left button-full" style="margin-top: 280px;" ng-click="doLogin()">
+<!-- 		<button href="#/app/eventos" type="button" class="button button-positive button-icon-left button-full" style="margin-top: 280px;" ng-click="doLogin()">
 			<span class="icon ion-social-facebook"></span> Entrar com Facebook
 		</button>
 
@@ -79,7 +121,7 @@
 		</div>
 
 		<input type="text" placeholder="ID" style="width: 100%;" ng-model="userId">
-		<button type="button" class="button button-royal button-full" ng-click="doLoginTeste(userId)">Logar com o id acima</button>
+		<button type="button" class="button button-royal button-full" ng-click="doLoginTeste(userId)">Logar com o id acima</button> -->
 	
 	</ion-content>
 </ion-view>
