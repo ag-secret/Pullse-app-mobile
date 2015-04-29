@@ -95,12 +95,15 @@ angular.module('starter.controllers', [])
 .controller('ListaVipController', function(
 	$ionicLoading,
 	$ionicModal,
+	$document,
 	$ionicPopup,
 	$scope,
 	$timeout,
+	WEBSERVICE_URL,
 	Evento,
 	Network
 ) {
+	$scope.imgBaseUrl = WEBSERVICE_URL;
 	/**
 	 * Mostra/esconde a mensagem de "Nenhuma lista"
 	 * 
@@ -205,7 +208,6 @@ angular.module('starter.controllers', [])
 				$timeout(function(){
 					Evento.addViplistSubscription({event_id: $scope.currentList.id})
 						.then(function(result){
-							$cordovaToast.show('Inscrição feita com sucesso!', 'long', 'bottom');
 							$scope.closeModal();
 						}).finally(function(){
 							$ionicLoading.hide();
@@ -246,12 +248,13 @@ angular.module('starter.controllers', [])
 	 * @type integer
 	 */
 	$scope.currentEvent = null;
-	 /**
-	 * Eventos
-	 * @type {Array}
-	 */
-	$scope.events = [];
 	$scope.$on('$ionicView.beforeEnter', function(){
+		 /**
+		 * Eventos
+		 * @type {Array}
+		 */
+		$scope.events = Evento.eventos;
+
 		$ionicSideMenuDelegate.canDragContent(false);
 		$ionicSlideBoxDelegate.update();
 		if ($scope.events.length === 0) {
@@ -287,7 +290,6 @@ angular.module('starter.controllers', [])
 					Evento.get()
 						.then(function(result){
 							if (result) {
-								console.log(result);
 								$scope.events = result;
 								/**
 								 * Faz um update do Slide Box para ele se reajustar para os novos
@@ -348,12 +350,15 @@ angular.module('starter.controllers', [])
 	$state,
 	$timeout,
 	DEFAULT_ROUTE,
+	Evento,
 	Me,
 	localStorageService
 ){
 	
 	var me = localStorageService.get('Me');
 	if (me) {
+		Evento.listas = localStorageService.get('listas');
+		Evento.eventos = localStorageService.get('eventos');
 		Me.data = me;
 		$state.go(DEFAULT_ROUTE);
 	} else {
@@ -660,6 +665,7 @@ angular.module('starter.controllers', [])
 	$ionicModal,
 	$ionicScrollDelegate,
 	$q,
+	$ionicHistory,
 	$scope,
 	$timeout,
 	Checkin,
@@ -697,6 +703,7 @@ angular.module('starter.controllers', [])
 	$scope.perfis = Checkin.perfis;
 	
 	$scope.$on('$ionicView.beforeEnter', function(){
+		$ionicHistory.clearHistory();
 		var flag = false;
 		
 		if ($scope.perfis.length === 0) {
@@ -843,7 +850,10 @@ angular.module('starter.controllers', [])
 	 * some com o botao
 	 */
 	$scope.refreshProfiles = function(){
-		$ionicScrollDelegate.scrollTop(true);
+		$timeout(function(){
+			$ionicScrollDelegate.scrollBottom(true);		
+		}, 500);
+		
 		$scope.perfis = [];
 		$scope.perfis = Checkin.perfis;
 		$scope.hasNewProfiles = false;
@@ -873,6 +883,9 @@ angular.module('starter.controllers', [])
 						}
 					}, function(err){
 						$scope.$broadcast('scroll.refreshComplete');
+					})
+					.finally(function(){
+						$scope.hasNewProfiles = false;
 					});
 			}, function(err){
 				$scope.$broadcast('scroll.refreshComplete');
@@ -1071,8 +1084,18 @@ angular.module('starter.controllers', [])
 			});
 	};
 })
-.controller('InstitucionalController', function($scope, $ionicPosition) {
+.controller('SobreController', function($scope, $ionicPosition) {
     
+})
+.controller('InstitucionalController', function($scope, FACEBOOKFANPAGE, PHONE) {
+	$scope.phone = PHONE;
+	
+	$scope.openFacebookFanPage = function(){
+		window.open(FACEBOOKFANPAGE, '_system', 'location=yes');
+	};
+	$scope.openDial = function(){
+		window.open('tel:' + PHONE, '_system', 'location=no');
+	};
 })
 /**
  * Envio de contato para o servidor
@@ -1141,4 +1164,41 @@ angular.module('starter.controllers', [])
 		$ionicLoading.hide();
 		$state.go('login');
 	}, 1000);
+})
+
+.controller('MapaController', function(
+	$scope,
+	uiGmapGoogleMapApi
+){
+
+	uiGmapGoogleMapApi.then(function(maps) {
+		$scope.marker = {
+			label: 'Pullse Club',
+			options: {
+			
+			},
+			location: {
+				latitude: -22.510743,
+				longitude: -44.081037				
+			},
+			place: {
+				query: 'Pullse Club Volta Redonda'
+			}
+		};
+		$scope.map = {
+			center:
+				{
+					latitude: -22.510743,
+					longitude: -44.081037
+				},
+			options: {
+				zoomControl: false,
+				streetViewControl: false,
+				mapTypeControl: false
+			},
+			zoom: 17
+		};
+		$scope.infoWindow = {};
+	});
+	
 });

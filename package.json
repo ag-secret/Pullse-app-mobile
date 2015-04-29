@@ -17,9 +17,13 @@
   "cordovaPlugins": [
     "org.apache.cordova.network-information",
     "org.apache.cordova.geolocation",
-    "org.apache.cordova.dialogs"
+    "org.apache.cordova.dialogs",
+    "org.apache.cordova.splashscreen"
   ],
   "cordovaPlatforms": [
-    "android"
+    {
+      "platform": "android",
+      "locator": "./engine/cordova-android-c0.6.1/"
+    }
   ]
 }

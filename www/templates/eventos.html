@@ -8,7 +8,7 @@
 	    	<span class="icon ion-android-refresh"></span>
 	    </button>
     </ion-nav-buttons>
-	<ion-content class="content">
+	<ion-content class="content-dark" has-bouncing="false">
 
 		<my-loader></my-loader>
 
@@ -16,7 +16,11 @@
 			Nenhum evento no momento.
 		</div>	
 
-		<ion-slide-box style="height: 100%;position: relative;" ng-if="events.length > 0" show-pager="false">
+		<ion-slide-box
+			style="height: 100%;position: relative;"
+			ng-if="events.length > 0"
+			show-pager="false">
+
 			<ion-slide
 				ng-repeat="event in events"
 				style="height: 100%; background-color: #111;"

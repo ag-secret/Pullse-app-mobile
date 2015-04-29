@@ -6,15 +6,17 @@
         </button>
     </ion-nav-buttons>
 
-	<ion-content class="content padding">
-		<div class="row">
-			<div class="col">
-				<textarea
-					placeholder="Digite aqui a sua mensagem..."
-					class="custom-input textarea-contato"
-					ng-model="$parent.mensagem">
-				</textarea>
-			</div>
+	<ion-content class="content" scrollbar-y="false" has-bouncing="false">
+		<div style="height: 100%; width: 100%; padding: 15px 15px 18px 15px;">
+			<textarea
+				placeholder="Digite aqui a sua mensagem..."
+				class="custom-input textarea-contato"
+				ng-model="$parent.mensagem">
+			</textarea>
 		</div>
+		<!-- <div class="row">
+			<div class="col">
+			</div>
+		</div> -->
 	</ion-content>
 </ion-view>

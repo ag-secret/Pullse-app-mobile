@@ -1,4 +1,17 @@
 angular.module('starter.directives', [])
+
+.directive('fullHeightInPx', function($window){
+    return {
+        restrict: 'C',
+        link: function (scope, element) {
+            var windowH = $window.innerHeight;
+            console.log(windowH);
+            element.css('height', (windowH)  + 'px');
+            console.log(element);
+        }
+    };
+})
+
 .directive('myContentFullHeight', function($window){
 	return {
 		restrict: 'C',
@@ -10,6 +23,7 @@ angular.module('starter.directives', [])
 		}
 	};
 })
+
 .directive('myLoader', function($window){
 	return {
 		templateUrl: function(elem, attr){

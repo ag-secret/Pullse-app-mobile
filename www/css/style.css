@@ -1,16 +1,35 @@
 /* Empty. Add your own CSS if you like */
-.textarea-contato::-webkit-input-placeholder { /* WebKit browsers */
-    color: #EEE!important;
-    font-family: "HelveticaNeue";
-    font-weight: bold;
+
+html, body{
+	height: 100%!important;
+	background-color: #000!important;
 }
+
+.content-dark{
+	background-color: #000!important;
+}
+
 .scroll{
 	height: 100%!important;
 }
+
+.angular-google-map-container {
+	height: 80%;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0; 	
+}
+
 .scroll-content{
   margin-top: 0!important;
   margin-bottom:0!important;
   padding-top:0!important;
+}
+.textarea-contato::-webkit-input-placeholder { /* WebKit browsers */
+    color: #EEE!important;
+    font-family: "HelveticaNeue";
+    font-weight: bold;
 }
 
 @font-face {
@@ -42,6 +61,11 @@ h2{
 }
 h3{
 	font-family: "HelveticaNeue"!important;
+}
+
+p{
+	letter-spacing: 1.2pt;
+	line-height: 23px
 }
 
 .buttons button, .back-button{
@@ -252,7 +276,6 @@ a.sidemenu-item, a.sidemenu-item p {
 }
 .btn-rounded span{
 	color: #FFF;
-
 }
 
 .btn-fixed-bottom-right{
@@ -360,7 +383,7 @@ a.sidemenu-item, a.sidemenu-item p {
 	min-height: 60%;
 	min-width: 60%;
 	border-radius: 60%;
-	border: 8px solid rgba(0, 0, 0, 0.2);
+	border: 10px solid rgba(0, 0, 0, 0.2);
 }
 .profile-avatar-wrap{
 	width: 100%;
@@ -412,7 +435,16 @@ a.sidemenu-item, a.sidemenu-item p {
 	height: 140px;
 	font-size: 70px;
 	border-radius: 140px;
-	border: 10px rgba(0, 0, 0, 0.3) solid;
+	border: 12px #631146 solid;
+}
+.btn-like-wrap{
+	width: 156px;
+	height: 156px;
+	left: 50%;
+	margin-left: -80px;
+	position: absolute;
+	border: 8px solid #4f0e35;
+	border-radius: 156px;
 }
 .btn-like:disabled{
 	opacity: 0.3;
@@ -430,11 +462,11 @@ a.sidemenu-item, a.sidemenu-item p {
 .btn-custom{
 	background-color: #d61277;
 	border: 0;
-	padding: 6px 24px;
+	padding: 10px 30px;
 	color: #FFF;
 	font-weight: bold;	
 	font-family: "HelveticaNeue";
-	font-size: 16px;
+	font-size: 18px;
 	border-radius: 30px;
 	text-align: center;
 }
@@ -477,8 +509,9 @@ a.sidemenu-item, a.sidemenu-item p {
 
 .textarea-contato{
 	padding: 15px;
-	height: 100%;
 	font-weight: normal!important;
+	height: 100%!important;
+	width: 100%;
 }
 
 .bubble 
@@ -536,10 +569,8 @@ left: 7px;
 	height: 50%;
 	background-color: red;*/
 }
-
-html, body{
-	height: 100%!important;
-}
-.scroll,{
-	height: 100%!important;
+.menu-logo{
+	opacity: 0.3;
+	width: 80%;
+	height: auto;
 }

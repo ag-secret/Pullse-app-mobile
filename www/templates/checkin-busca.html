@@ -1,21 +1,26 @@
 <ion-view title="Pesquisar pessoas" cache-view="true">
 	
-	<div class="bar bar-subheader">
+	<div class="bar bar-subheader" has-bouncing="false">
 		<input type="text" ng-model="search" placeholder="Pesquisar por nome..." style="background-color: white; margin-top: -2px; width: 100%;padding-left: 25px;" id="input-search">
 		<span class="icon ion-search" style="position: absolute; top: 0; margin-top: 12px; font-size: 20px;color: #222;"></span>
 	</div>
 
 	<ion-content>
-<div class="list list-inset">
-  <label class="item item-input">
-    <i class="icon ion-search placeholder-icon"></i>
-    <input type="text" placeholder="Search">
-  </label>
-</div>
+		<div class="list list-inset">
+			<label class="item item-input">
+				<i class="icon ion-search placeholder-icon"></i>
+				<input type="text" placeholder="Search">
+			</label>
+		</div>
 		<div ng-if="search">
 			<div class="list">
-				<a class="item item-avatar repeated-item" href="#/app/checkin-perfil/{{perfil.id}}/{{eventId}}" collection-repeat="perfil in perfis | filter:search">
-					<img src="https://graph.facebook.com/{{perfil.facebook_uid}}/picture?width=80&height=80" class="image">
+				<a
+					class="item item-avatar repeated-item"
+					href="#/app/checkin-perfil/{{perfil.id}}/{{eventId}}"
+					collection-repeat="perfil in perfis | filter:search">
+					<img
+						src="https://graph.facebook.com/{{perfil.facebook_uid}}/picture?width=80&height=80" 
+						class="image">
 					<h2>{{perfil.name}}</h2>
 					<p>Fez checkin <span am-time-ago="perfil.created"></span></p>
 				</a>

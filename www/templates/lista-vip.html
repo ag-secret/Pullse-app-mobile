@@ -1,6 +1,6 @@
 <ion-view title="Lista Vip">
 	<!-- Início do conteúdo -->
-	<ion-content class="content">
+	<ion-content class="content" has-bouncing="false">
 		<!-- Loading do carregamento inicial -->
 		<my-loader></my-loader>
 		<!-- Refresher -->
@@ -17,7 +17,7 @@
 				<h2>
 					{{lista.name}}
 				</h2>
-				<span class="item-note">
+				<span class="item-note" style="text-transform: capitalize;">
 					{{ lista.data_inicio | amDateFormat: 'DD/MM' }}
 				</span>
 				<p>Lista encerra <span am-time-ago="lista.lista_vip_dt_fim"></span></p>

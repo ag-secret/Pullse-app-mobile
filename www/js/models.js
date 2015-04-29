@@ -485,6 +485,8 @@ angular.module('starter.models', [])
 				defer.resolve();
 			})
 			.error(function(data, code){
+				// alert(code);
+				// alert(JSON.stringify(data));
 				Util.handleRequestError(code);
 				defer.reject();
 			});
@@ -589,10 +591,14 @@ angular.module('starter.models', [])
 				timeout: COMMUNICATION_TIMEOUT
 			})
 			.success(function(data){
-				_this.events = data;
+				_this.eventos = data || [];
+				localStorageService.set('eventos', _this.eventos);
 				defer.resolve(data);
 			})
 			.error(function(data, code){
+				alert(WEBSERVICE_URL + '/events');
+				alert(data);
+				alert(code);
 				Util.handleRequestError(code);
 				defer.reject();
 			});
@@ -611,6 +617,7 @@ angular.module('starter.models', [])
 			})
 			.success(function(data){
 				_this.listas = data ? data : [];
+				localStorageService.set('listas', _this.listas);
 				defer.resolve(data);
 			})
 			.error(function(data, code){
@@ -635,6 +642,7 @@ angular.module('starter.models', [])
 				timeout: COMMUNICATION_TIMEOUT
 			})
 			.success(function(data){
+				$cordovaToast.show('Inscrição feita com sucesso!', 'short', 'bottom');
 				defer.resolve(data);
 			})
 			.error(function(data, status){

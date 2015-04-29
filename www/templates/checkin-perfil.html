@@ -1,5 +1,5 @@
 <ion-view title="{{profile.name}}">
-	<ion-content class="content">
+	<ion-content class="content" has-bouncing="false">
 		<div style="height: 60%" class="text-center profile-header">
 			<div class="row" style="height: 100%;">
 				<div class="col col-center">
@@ -29,15 +29,17 @@
 				Você não pode curtir por que ainda não fez o checkin.
 			</div>
 
-			<button
-				ng-disabled="!canLike()"
-				type="button"
-				class="btn-like"
-				ng-show="hasBtnHeart && canLike"
-				ng-click="addHeartPreflight()">
+			
+			<div class="btn-like-wrap" ng-show="hasBtnHeart && canLike" style="margin-top: 20px;">
+				<button
+					ng-disabled="!canLike()"
+					type="button"
+					class="btn-like"
+					ng-click="addHeartPreflight()">
 
-				<span class="icon ion-heart"></span>
-			</button>
+					<span class="icon ion-heart"></span>
+				</button>
+			</div>
 
 			<div ng-if="message" class="padding">
 				<div class="profile-message-sender">

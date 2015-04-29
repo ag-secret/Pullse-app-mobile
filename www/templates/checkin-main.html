@@ -43,7 +43,7 @@
 		</a>
 	</div> -->
 
-	<ion-content class="content" ng-class="{'has-subheader': currentEvent}">
+	<ion-content class="content" ng-class="{'has-subheader': currentEvent}" has-bouncing="false">
 
 		<ion-refresher
 			spinner="ripple"
@@ -62,23 +62,23 @@
 		</div>
 
  		<div>
-			<div class="" style="margin-bottom: -5px;float: left; width: 33.333333%;" ng-repeat="perfil in perfis">
+			<div class="" style="margin-bottom: -6px;padding: 0!important;float: left; width: 33.333333%;" ng-repeat="perfil in perfis">
 				<a
 					href="#/app/checkin-perfil/{{perfil.id}}/{{currentEvent.id}}">
 					<img
 						ng-src="https://graph.facebook.com/{{perfil.facebook_uid}}/picture?width=140&height=140"
-						class="image checkin-main-image"
+						class="image"
 						style="width: 100%;height: auto!important;">
 				</a>
 			</div>
-			<div class="custom-alert" ng-show="!currentEvent && !alertNoEvents">
-				Ninguém fez checkin ainda.
-			</div>
+		</div>
+		<div class="custom-alert" ng-show="!alertNoEvents && alertNoProfiles">
+			Ninguém fez checkin ainda.
 		</div>
 
 	</ion-content>
 
-	<div ng-show="hasNewProfiles"
+	<div ng-show="hasNewProfiles && !alertNoEvents"
 		class="btn-novas-pessoas" ng-click="refreshProfiles()">
 		Novas pessoas entraram
 	</div>

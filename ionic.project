@@ -1,4 +1,11 @@
 {
   "name": "pullse",
-  "app_id": "7d2fe5ca"
+  "app_id": "7d2fe5ca",
+  "browsers": [
+    {
+      "platform": "android",
+      "browser": "crosswalk",
+      "version": "12.41.296.5"
+    }
+  ]
 }

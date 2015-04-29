@@ -13,7 +13,8 @@ angular.module('starter', [
     'starter.controllers',
     'starter.models',
     'starter.utils',
-    'starter.directives'
+    'starter.directives',
+    'uiGmapgoogle-maps'
 ])
 
 .constant('PRODUCTION', true)
@@ -22,7 +23,17 @@ angular.module('starter', [
 .constant('FACEBOOK_APP_ID', 401554549993450)
 .constant('PUSH_NOTIFICATION_SENDER_ID', '552977488644')
 .constant('CLUB_ID', 1)
-.constant('DEFAULT_ROUTE', 'app.lista-vip')
+.constant('DEFAULT_ROUTE', 'app.eventos')
+.constant('FACEBOOKFANPAGE', 'https://www.facebook.com/PullseClub')
+.constant('PHONE', '(24) 97401-3348')
+
+.config(function(uiGmapGoogleMapApiProvider) {
+    uiGmapGoogleMapApiProvider.configure({
+        //    key: 'your api key',
+        v: '3.17',
+        libraries: 'weather, geometry, visualization'
+    });
+})
 
 .config(function($ionicConfigProvider) {
     $ionicConfigProvider.views.transition('none');
@@ -32,58 +43,79 @@ angular.module('starter', [
 })
 
 .run(function(
-    $cordovaLocalNotification,
+    // $cordovaLocalNotification,
     $cordovaPush,
     $ionicHistory,
     $ionicPlatform,
     $rootScope,
+    $http,
     $state,
     PRODUCTION,
     PUSH_NOTIFICATION_SENDER_ID
 ) {
 
     $ionicPlatform.ready(function() {
-
+        
         var config = {};
         if (ionic.Platform.isAndroid()) {
             config = {
                 'senderID': PUSH_NOTIFICATION_SENDER_ID,
             };
+            if (PRODUCTION) {
+                $cordovaPush.register(config).then(function(result) {
+                    // alert('registrou');
+                }, function(err) {
+                });
+            }
+
+            $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+                switch(notification.event) {
+                    case 'message':
+                        // Entra aqui quando recebe um mensagem
+                        // alert('Recebeu');
+                        // alert(notification.collapse_key);
+                        // if (notification.collapse_key == 'combination' || notification.collapse_key == 'like') {
+                        //     $state.go('app.checkin-main');
+                        // }
+                        // $cordovaLocalNotification.add({
+                        //     id: notification.payload.notId,
+                        //     title: notification.payload.title,
+                        //     message: notification.payload.message,
+                        // }).then(function () {
+                        //     console.log('callback for adding background notification');
+                        // });
+                    break;
+                }
+            });
+
         } else if(ionic.Platform.isIOS()) {
             config = {
-                'senderID': 'APN AQUI!',
+                "badge": true,
+                "sound": true,
+                "alert": true,
             };
-        }
 
-        if (PRODUCTION) {
-            $cordovaPush.register(config).then(function(result) {
-                alert('registrou');
-            }, function(err) {
-            });
-        }
-
-        $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
-            switch(notification.event) {
-                case 'message':
-                    // Entra aqui quando recebe um mensagem
-                    alert('Recebeu');
-                    alert(notification.collapse_key);
-                    if (notification.collapse_key == 'combination' || notification.collapse_key == 'like') {
-                        $ionicHistory.nextViewOptions({
-                            disableBack: true
-                        });
-                        $state.go('app.checkin-main');
-                    }
-                    $cordovaLocalNotification.add({
-                        id: notification.payload.notId,
-                        title: notification.payload.title,
-                        message: notification.payload.message,
-                    }).then(function () {
-                        console.log('callback for adding background notification');
-                    });
-                break;
+            if (PRODUCTION) {
+                $cordovaPush.register(config).then(function(result) {
+                    alert("result: " + result);
+                    $http.post("http://server.co/", {user: "Bob", tokenID: result.deviceToken});
+                }, function(err) {
+                    alert("Registration error: " + err);
+                });
             }
-        });
+
+            $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+                if (notification.alert) {
+                    navigator.notification.alert(notification.alert);
+                }
+
+                if (notification.sound) {
+                    var snd = new Media(event.sound);
+                    snd.play();
+                }
+            });
+
+        }
 
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -196,6 +228,15 @@ angular.module('starter', [
                 }
             }
         })
+        .state('app.sobre', {
+            url: "/sobre",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/sobre.html",
+                    controller: 'SobreController'
+                }
+            }
+        })
         .state('app.checkin-matches', {
             url: "/checkin-matches/:eventId/:flag",
             views: {
@@ -220,6 +261,15 @@ angular.module('starter', [
                 'menuContent': {
                     templateUrl: "templates/institucional.html",
                     controller: 'InstitucionalController'
+                }
+            }
+        })
+        .state('app.mapa', {
+            url: "/mapa",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/mapa.html",
+                    controller: "MapaController"
                 }
             }
         })
