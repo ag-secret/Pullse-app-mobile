@@ -1,14 +1,26 @@
 <ion-view view-title="Sobre">
     <ion-content class="content text-center" has-bouncing="false">
-    	<p class="padding" style="color: white;">
-    		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-    		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-    		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-    		proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    	</p>
 
-    	<img src="img/logo_interagir.png"  width="40%">
+        <img src="img/logo_interagir.png" alt="" style="width: 60%;height: auto; margin: 65px 0">
+        <p class="padding" style="color: white;text-align: left;padding: 0 20px;">
+            Inaugurada em 15 de abril de 2011, o Club traz a proposta solida de diversão com qualidade!
+            <br>
+            Inovação, Beleza e Luxo são apenas alguns dos ingredientes que fazem da PULLSE a melhor opção para o público de bom gosto que busca um ambiente sofisticado e extremamente agradável.
+        </p>
+    
+        <br>
+
+        <ion-list style="text-align: left;">
+            <ion-item class="item-icon-left" ng-click="openFacebookFanPage()">
+                /interagir
+                <span class="icon ion-social-facebook"></span>
+            </ion-item>
+            <ion-item class="item-icon-left" ng-click="openDial()">
+                {{phone}}
+                <span class="icon ion-social-whatsapp-outline"></span>
+            </ion-item>
+        </ion-list>
+
+        <br style="clear: both;">
     </ion-content>
 </ion-view>

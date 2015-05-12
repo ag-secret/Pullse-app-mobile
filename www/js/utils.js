@@ -19,7 +19,7 @@ angular.module('starter.utils', [])
 			            if (isOnline) {
 			            	defer.resolve();
 			            } else {
-			            	$cordovaToast.show('Sem conexão com a internet', 'short', 'bottom');
+			            	$cordovaToast.show('Sem conexão com a internet.', 'short', 'bottom');
 			            	defer.reject();
 			            }
 					}, false);

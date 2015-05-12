@@ -96,6 +96,7 @@ angular.module('starter.models', [])
 	CLUB_ID
 ){
 	return {
+		localData: {},
 		data: null,
 		doLoginTeste: function(id){
 			var defer = $q.defer();
@@ -529,7 +530,7 @@ angular.module('starter.models', [])
 			var defer = $q.defer();
 
 			$ionicLoading.show({
-				template: 'Enviando contato...'
+				template: 'Enviando contato, aguarde...'
 			});
 			Network.check()
 				.then(function(result){
@@ -554,6 +555,8 @@ angular.module('starter.models', [])
 							$ionicLoading.hide();
 						});
 					}, duration);
+				}, function(){
+					$ionicLoading.hide();
 				});
 			return defer.promise;
 		}
@@ -591,21 +594,33 @@ angular.module('starter.models', [])
 				timeout: COMMUNICATION_TIMEOUT
 			})
 			.success(function(data){
-				_this.eventos = data || [];
-				localStorageService.set('eventos', _this.eventos);
-				defer.resolve(data);
+				var eventos = [];
+				//Acertando alguns campos para na hora do template ele apenas chamar
+				//os dados.
+				if (data) {
+					angular.forEach(data, function(value, key) {
+						var baseImageURL = 'http://bbgl.kinghost.net/img/eventos/' + value.id + '/' + value.imagem_capa;
+						value.finalImage = value.imagem_capa ? baseImageURL : value.facebook_img;
+						eventos.push(value);
+					});
+				} else {
+					eventos = [];
+				}
+				Me.localData.eventos = eventos;
+				localStorageService.set('localData', Me.localData);
+				defer.resolve();
 			})
 			.error(function(data, code){
-				alert(WEBSERVICE_URL + '/events');
-				alert(data);
-				alert(code);
+				// alert(WEBSERVICE_URL + '/events');
+				// alert(data);
+				// alert(code);
 				Util.handleRequestError(code);
 				defer.reject();
 			});
 
 			return defer.promise;
 		},
-		getLists: function(page){
+		getLists: function(){
 			var defer = $q.defer();
 			var _this = this;
 
@@ -616,9 +631,18 @@ angular.module('starter.models', [])
 				timeout: COMMUNICATION_TIMEOUT
 			})
 			.success(function(data){
-				_this.listas = data ? data : [];
-				localStorageService.set('listas', _this.listas);
-				defer.resolve(data);
+				// _this.listas = data ? data : [];
+				// localStorageService.set('listas', _this.listas);
+				var listas = [];
+				if (data) {
+					angular.forEach(data, function(value, key) {
+						var baseImageURL = 'http://bbgl.kinghost.net/img/eventos/' + value.id + '/' + value.imagem_capa;
+						value.finalImage = value.imagem_capa ? baseImageURL : value.facebook_img;
+						listas.push(value);
+					});
+					console.log(listas);
+				}
+				defer.resolve(listas);
 			})
 			.error(function(data, code){
 				Util.handleRequestError(code);
@@ -717,7 +741,12 @@ angular.module('starter.models', [])
 							defer.resolve();
 						})
 						.error(function(data, code){
-							Util.handleRequestError(code);
+							if (code == 405) {
+								$cordovaToast.show(data.message, 'short', 'bottom');
+							} else {
+								Util.handleRequestError(code);	
+							}
+							
 							defer.reject();
 						});
 					}, function(err) {

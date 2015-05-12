@@ -8,17 +8,17 @@
 	    	<span class="icon ion-android-refresh"></span>
 	    </button>
     </ion-nav-buttons>
-	<ion-content class="content-dark" has-bouncing="false">
+	<ion-content class="content content-dark" has-bouncing="false" scrollbar-y="0">
 
 		<my-loader></my-loader>
 
-		<div ng-show="alertNoEvents" class="custom-alert">
+		<div ng-if="alertNoEvents && !loading" class="custom-alert">
 			Nenhum evento no momento.
 		</div>	
 
 		<ion-slide-box
 			style="height: 100%;position: relative;"
-			ng-if="events.length > 0"
+			ng-if="events.length > 0 && !loading"
 			show-pager="false">
 
 			<ion-slide
@@ -27,7 +27,7 @@
 				class="eventos">
 
 				<preload-bg
-					url="{{imgBaseUrl}}/img/events/{{event.id}}/{{event.imagem_capa}}"
+					url="{{ event.finalImage }}"
 					style="width: 100%; top: 0; height: 80%;background-size: cover; background-position: top center; position: absolute;">
 				</preload-bg>
 

@@ -2,33 +2,51 @@
     <ion-content class="content text-center" has-bouncing="false">
 
     	<img src="img/logo.png" alt="" style="width: 60%;height: auto; margin: 65px 0">
-    	<p class="padding" style="color: white;">
-    		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    	<p class="padding" style="color: white;text-align: left;padding: 0 20px;">
+    		Inaugurada em 15 de abril de 2011, o Club traz a proposta solida de diversão com qualidade!
+            <br>
+            Inovação, Beleza e Luxo são apenas alguns dos ingredientes que fazem da PULLSE a melhor opção para o público de bom gosto que busca um ambiente sofisticado e extremamente agradável.
     	</p>
     	<img src="img/foto1.jpg" alt="" style="width: 100%;height: auto; margin: 20px 0">
-    	<p class="padding" style="color: white;">
-    		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    	<p class="padding" style="color: white; text-align: left;padding: 0 20px;">
+            Meta de Entretenimento do Club é trazer atrações nacionais e internacionais de qualidade focado sempre na proposta do atendimento de excelência máxima, acreditando que cada cliente é único e que o valor da diversão é impagável, portanto a PULLSE surgiu para suprir a carência e necessidade de uma casa de qualificação impar, da entrada até a saída ou em qualquer outro aspecto, o diferencial é sempre a INOVAÇÃO. 
+            <br><br>
+            A PULLSE, colocou a cidade de Volta Redonda e a Região Sul Fluminense no mapa das grandes festas do Estado do Rio de Janeiro, trazendo Grandes nomes Nacionais como : Bernado Novaes, Marcelo CIC, Ask2Quit, Rodrigo Ardilha, Ibero Bell entre outros; e DJs Internacionais: Milton Channels, Michael Kutalek, Kid Diesel, Antu Coimbra e Hector Lopez.  
     	</p>
-    	<img src="img/foto2.jpg" alt="" style="width: 100%;height: auto; margin: 20px 0">
-    	<p class="padding" style="color: white;">
-    		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    	
+        <img src="img/foto2.jpg" alt="" style="width: 100%;height: auto; margin: 20px 0">
+
+    	<p class="padding" style="color: white;text-align: left;padding: 0 20px;">
+            São 5 Ambientes: Pista, Camarote (Individuais para até 13 pessoas), Camarote Premium (Para 25 pessoas), Área Vip (Com Bares e Banheiros Exclusivos) e Uma Área Exclusiva para Fumantes.
+            <br><br>
+            O Club é todo adaptado para portadores de necessidades especiais; Ambiente completamente Climatizado com mais de 420.000 btus de Ar Condicionado.
+            <br><br>
+            Sistema de Som em Line-Array D.A.S, um dos mais modernos do mundo! Montado especificamente para atender a estrutura arquitetônica que a casa oferece, proporcionando um som de extrema qualidade, equalizado para ouvidos exigentes de um publico seleto que a casa abriga.
+            <br><br>
+            Iluminação de ultima geração, composta por 16 movings heads Robe 250w e 4 Moving Beam, 2 Strobos ATOMIC, 2 Lasers RGB e Refletores de LED espalhados por todo o club.    
     	</p>
 
         <br>
 
-        <h4 style="color: white;" ng-click="openFacebookFanPage()">
-            <span class="icon ion-social-facebook"></span> /PullseClub
-        </h4>
-        <h4 style="color: white;" ng-click="openDial()">
-            <span class="icon ion-social-whatsapp-outline"></span> {{phone}}
-        </h4>
+        <ion-list style="text-align: left;">
+            <ion-item class="item-icon-left" ng-click="openFacebookFanPage()">
+                /PullseClub
+                <span class="icon ion-social-facebook"></span>
+            </ion-item>
+            <ion-item class="item-icon-left" ng-click="openDial()">
+                {{phone}}
+                <span class="icon ion-social-whatsapp-outline"></span>
+            </ion-item>
+        </ion-list>
 
         <br>
+
         <div style="margin: 40px 0 30px 0;" class="text-center">
         	<a href="#/app/mapa" class="btn-custom" style="text-decoration: none;">
-        		<span class="icon ion-ios-location"></span> &nbsp;Ver localização
+        		<span class="icon ion-ios-location"></span>&nbsp;Ver localização
         	</a>
         </div>
+
         <br style="clear: both;">
     </ion-content>
 </ion-view>

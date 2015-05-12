@@ -1,5 +1,10 @@
 /* Empty. Add your own CSS if you like */
-
+.gm-style-iw + div {
+	display: none;
+}
+.gm-style-iw{
+	left: 29px!important;
+}
 html, body{
 	height: 100%!important;
 	background-color: #000!important;
@@ -198,6 +203,7 @@ a.sidemenu-item, a.sidemenu-item p {
 .event-name {
 	font-size: 22px;
 	margin: 20px 0;
+	line-height: 25px;
 }
 .event-date {
 	font-size: 50px;
@@ -436,6 +442,10 @@ a.sidemenu-item, a.sidemenu-item p {
 	font-size: 70px;
 	border-radius: 140px;
 	border: 12px #631146 solid;
+	background-image: url(../img/coracao.png)!important;
+	background-position: center center!important;
+	background-repeat: no-repeat!important;
+	background-size: 60%!important;
 }
 .btn-like-wrap{
 	width: 156px;
@@ -500,11 +510,12 @@ a.sidemenu-item, a.sidemenu-item p {
 .custom-alert{
 	text-align: center;
 	padding: 20px;
-	border-radius: 6px;
+	/*border-radius: 6px;*/
 	background-color: rgba(0, 0, 0, 0.5);
 	font-size: 18px;
 	color: #FFF;
-	margin: 10px;
+	margin-top: -2px;
+	/*margin: 10px;*/
 }
 
 .textarea-contato{

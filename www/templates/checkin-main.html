@@ -55,10 +55,7 @@
 		<my-loader></my-loader>
 		
 		<div ng-show="alertNoEvents" class="custom-alert">
-			Não tem nenhum evento rolando agora...
-			<button type="button" class="btn-custom" ng-click="getCurrentEventByButton()" style="margin-top: 20px;">
-				Buscar novamente
-			</button>
+			Nenhum evento rolando no momento...
 		</div>
 
  		<div>
@@ -72,8 +69,15 @@
 				</a>
 			</div>
 		</div>
+		
 		<div class="custom-alert" ng-show="!alertNoEvents && alertNoProfiles">
 			Ninguém fez checkin ainda.
+		</div>
+
+		<div class="text-center" style="margin-top: 20px;">
+			<button type="button" class="btn-custom" ng-click="getCurrentEventByButton()" style="">
+				Buscar novamente
+			</button>
 		</div>
 
 	</ion-content>

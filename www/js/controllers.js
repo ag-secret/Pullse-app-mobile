@@ -103,7 +103,6 @@ angular.module('starter.controllers', [])
 	Evento,
 	Network
 ) {
-	$scope.imgBaseUrl = WEBSERVICE_URL;
 	/**
 	 * Mostra/esconde a mensagem de "Nenhuma lista"
 	 * 
@@ -128,13 +127,15 @@ angular.module('starter.controllers', [])
 		 * Listas
 		 * @type {Array}
 		 */
-		$scope.listas = Evento.listas;
+		$scope.listas = [];
 		/**
 		 * Só mostra o loading se a tela estiver vazio de listas,
 		 * caso contrario ele não mostra e o carregamento será feito no fundo.
 		 * @type {Boolean}
 		 */
-		$scope.loading = $scope.listas.length === 0 ? true : false;
+		// if ($scope.listas.length =) {};
+		// $scope.loading = $scope.listas.length === 0 ? true : false;
+		$scope.loading = true;
 		/**
 		 * Carrega as listas antes de entrar na view
 		 */
@@ -155,6 +156,7 @@ angular.module('starter.controllers', [])
 	 * @param {Object} lista - Os dados referentes a linha clicada na lista de listas hehe
 	 */
 	$scope.openModal = function(lista) {
+		console.log(lista);
 		$scope.currentList = lista;
 		$scope.modal.show();
 	};
@@ -172,15 +174,14 @@ angular.module('starter.controllers', [])
 		Network.check()
 			.then(function(){
 				$timeout(function(){
-					Evento.getLists($scope.page)
+					Evento.getLists()
 						.then(function(result){
-							console.log(result);
-							$scope.listas = Evento.listas;
-							$scope.noLists = $scope.listas.length === 0 ? true : false;
+							$scope.listas = result || [];
 						})
 						.finally(function(){
 							$scope.loading = false;
 							$scope.$broadcast('scroll.refreshComplete');
+							$scope.noLists = $scope.listas.length === 0 ? true : false;
 						});
 				/**
 				 * Caso o leader esteja aparecendo colocamos 1500ms de timeout
@@ -191,6 +192,9 @@ angular.module('starter.controllers', [])
 				 */
 				}, $scope.loading ? 1500 : 0);
 			}, function(){
+				if ($scope.listas.length === 0) {
+					$scope.noLists = true;
+				}
 				$scope.loading = false;
 				$scope.$broadcast('scroll.refreshComplete');
 			});
@@ -203,7 +207,7 @@ angular.module('starter.controllers', [])
 		Network.check()
 			.then(function(result){
 				$ionicLoading.show({
-					template: 'Enviando...'
+					template: 'Enviando nome, aguarde...'
 				});
 				$timeout(function(){
 					Evento.addViplistSubscription({event_id: $scope.currentList.id})
@@ -226,22 +230,18 @@ angular.module('starter.controllers', [])
 	$ionicSlideBoxDelegate,
 	$scope,
 	$timeout,
+	Me,
 	Evento,
 	Network,
 	WEBSERVICE_URL
 ){
-	/**
-	 * Base URL para carregarmos as images.
-	 * @type {string}
-	 */
-	$scope.imgBaseUrl = WEBSERVICE_URL;
 	/**
 	 * Controla o alert que não tem eventos. Não usamos o "eventos.length == 0" por que antes de
 	 * carregar esta condição seria satisfeito porém não quer dizer que nao tenha evento e sim
 	 * que ainda nao carregou, por isso precisamos desta variavel para controlar o alert corretamente.
 	 * @type {Boolean}
 	 */
-	$scope.alertNoEvents = false;
+	// $scope.alertNoEvents = false; // Ver a necessidade e apagar se nao for necessario
 	/**
 	 * Como não tem como passar parametro para a modal esta variavel diz a modal qual o atual slide
 	 * portanto qual evento mostrar
@@ -253,10 +253,10 @@ angular.module('starter.controllers', [])
 		 * Eventos
 		 * @type {Array}
 		 */
-		$scope.events = Evento.eventos;
-
-		$ionicSideMenuDelegate.canDragContent(false);
+		$scope.events = Me.localData.eventos || [];
 		$ionicSlideBoxDelegate.update();
+		$ionicSideMenuDelegate.canDragContent(false);
+		
 		if ($scope.events.length === 0) {
 			$scope.getEvents();
 		}
@@ -280,31 +280,15 @@ angular.module('starter.controllers', [])
 	 * foi chamado
 	 */
 	$scope.getEvents = function(){
-		$scope.events = [];
 		$scope.loading = true;
 		Network.check()
-			.then(function(result){
-				$ionicSlideBoxDelegate.update();
-				$scope.loading = true;
+			.then(function(result){				
 				$timeout(function(){
 					Evento.get()
-						.then(function(result){
-							if (result) {
-								$scope.events = result;
-								/**
-								 * Faz um update do Slide Box para ele se reajustar para os novos
-								 * itens dele
-								 */
-								$ionicSlideBoxDelegate.update();
-								/**
-								 * Aqui é uma pequena gambi, se o slide atual for o ultimo e quando atulizar ele
-								 * nao existir mais todo o slidebox sumia, então indo para o primeiro resolve o problema
-								 */
-								// $ionicSlideBoxDelegate.slide(0);	
-								/**
-								 * Caso não venha nenhum valor do servidor mostramos o alert
-								 * falando que não existe nenhum evento cadastrado
-								 */
+						.then(function(){
+							$scope.events = Me.localData.eventos;
+							$ionicSlideBoxDelegate.update();
+							if ($scope.events.length > 0) {
 								$scope.alertNoEvents = false;
 							} else {
 								$scope.events = [];
@@ -354,11 +338,11 @@ angular.module('starter.controllers', [])
 	Me,
 	localStorageService
 ){
-	
 	var me = localStorageService.get('Me');
 	if (me) {
 		Evento.listas = localStorageService.get('listas');
-		Evento.eventos = localStorageService.get('eventos');
+		//Evento.eventos = localStorageService.get('eventos'); Apagar
+		Me.localData = localStorageService.get('localData') || {}; // Object em vez de null
 		Me.data = me;
 		$state.go(DEFAULT_ROUTE);
 	} else {
@@ -783,7 +767,7 @@ angular.module('starter.controllers', [])
 		$scope.stopInterval();
 		timerRefreshData = $interval(function(){
 			$scope.getNewPerfis(false);
-		}, 1000);
+		}, 5000);
 	};
 	/**
 	 * Para o intervalo
@@ -798,7 +782,7 @@ angular.module('starter.controllers', [])
 		$scope.stopCheckEventTimer();
 		timerCheckCurrentEvent = $interval(function(){
 			$scope.getCurrentEvent(false);
-		}, 3000);
+		}, 5000);
 	};
 	$scope.stopCheckEventTimer = function(){
 		console.log('Parando interval event');
@@ -1084,8 +1068,15 @@ angular.module('starter.controllers', [])
 			});
 	};
 })
-.controller('SobreController', function($scope, $ionicPosition) {
-    
+.controller('SobreController', function($scope, INTERAGIR_FACEBOOK_FANPAGE, INTERAGIR_PHONE) {
+    $scope.phone = INTERAGIR_PHONE;
+	
+	$scope.openFacebookFanPage = function(){
+		window.open(INTERAGIR_FACEBOOK_FANPAGE, '_system', 'location=yes');
+	};
+	$scope.openDial = function(){
+		window.open('tel:' + INTERAGIR_PHONE, '_system', 'location=no');
+	};
 })
 .controller('InstitucionalController', function($scope, FACEBOOKFANPAGE, PHONE) {
 	$scope.phone = PHONE;
@@ -1142,6 +1133,7 @@ angular.module('starter.controllers', [])
 ) {
 	$ionicLoading.show({template: 'Saindo...'});
 	$timeout(function(){
+		Me.localData = {};
 		/**
 		 * Evento
 		 */

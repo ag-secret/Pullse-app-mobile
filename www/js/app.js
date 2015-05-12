@@ -17,15 +17,19 @@ angular.module('starter', [
     'uiGmapgoogle-maps'
 ])
 
-.constant('PRODUCTION', true)
+.constant('PRODUCTION', false)
 // .constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
-.constant('WEBSERVICE_URL', 'http://bbgl.kinghost.net')
+.constant('WEBSERVICE_URL', 'http://api.bbgl.kinghost.net')
 .constant('FACEBOOK_APP_ID', 401554549993450)
 .constant('PUSH_NOTIFICATION_SENDER_ID', '552977488644')
+
 .constant('CLUB_ID', 1)
-.constant('DEFAULT_ROUTE', 'app.eventos')
+
 .constant('FACEBOOKFANPAGE', 'https://www.facebook.com/PullseClub')
 .constant('PHONE', '(24) 97401-3348')
+.constant('INTERAGIR_FACEBOOK_FANPAGE', 'https://www.facebook.com/interagir')
+.constant('INTERAGIR_PHONE', '(24) 97401-3348')
+.constant('DEFAULT_ROUTE', 'app.lista-vip')
 
 .config(function(uiGmapGoogleMapApiProvider) {
     uiGmapGoogleMapApiProvider.configure({
@@ -36,7 +40,7 @@ angular.module('starter', [
 })
 
 .config(function($ionicConfigProvider) {
-    $ionicConfigProvider.views.transition('none');
+    //$ionicConfigProvider.views.transition('none');
     if (ionic.Platform.platform() == 'ios') {
         $ionicConfigProvider.backButton.text('Voltar');
     }
