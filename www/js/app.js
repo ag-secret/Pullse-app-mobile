@@ -17,7 +17,7 @@ angular.module('starter', [
     'uiGmapgoogle-maps'
 ])
 
-.constant('PRODUCTION', false)
+.constant('PRODUCTION', true)
 // .constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
 .constant('WEBSERVICE_URL', 'http://api.bbgl.kinghost.net')
 .constant('FACEBOOK_APP_ID', 401554549993450)
@@ -28,12 +28,12 @@ angular.module('starter', [
 .constant('FACEBOOKFANPAGE', 'https://www.facebook.com/PullseClub')
 .constant('PHONE', '(24) 97401-3348')
 .constant('INTERAGIR_FACEBOOK_FANPAGE', 'https://www.facebook.com/interagir')
-.constant('INTERAGIR_PHONE', '(24) 97401-3348')
+.constant('INTERAGIR_PHONE', '(24) 3336-1566')
 .constant('DEFAULT_ROUTE', 'app.lista-vip')
 
 .config(function(uiGmapGoogleMapApiProvider) {
     uiGmapGoogleMapApiProvider.configure({
-        //    key: 'your api key',
+        // key: 'your api key',
         v: '3.17',
         libraries: 'weather, geometry, visualization'
     });
@@ -52,6 +52,7 @@ angular.module('starter', [
     $ionicHistory,
     $ionicPlatform,
     $rootScope,
+    $cordovaStatusbar,
     $http,
     $state,
     PRODUCTION,
@@ -59,7 +60,7 @@ angular.module('starter', [
 ) {
 
     $ionicPlatform.ready(function() {
-        
+        $cordovaStatusbar.style(3);
         var config = {};
         if (ionic.Platform.isAndroid()) {
             config = {
@@ -101,23 +102,22 @@ angular.module('starter', [
 
             if (PRODUCTION) {
                 $cordovaPush.register(config).then(function(result) {
-                    alert("result: " + result);
-                    $http.post("http://server.co/", {user: "Bob", tokenID: result.deviceToken});
+                    // alert("result: " + result);
                 }, function(err) {
-                    alert("Registration error: " + err);
+                    // alert("Registration error: " + err);
                 });
             }
 
-            $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
-                if (notification.alert) {
-                    navigator.notification.alert(notification.alert);
-                }
+            // $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+            //     if (notification.alert) {
+            //         navigator.notification.alert(notification.alert);
+            //     }
 
-                if (notification.sound) {
-                    var snd = new Media(event.sound);
-                    snd.play();
-                }
-            });
+            //     if (notification.sound) {
+            //         var snd = new Media(event.sound);
+            //         snd.play();
+            //     }
+            // });
 
         }
 
@@ -128,7 +128,7 @@ angular.module('starter', [
         }
         if (window.StatusBar) {
             // org.apache.cordova.statusbar required
-            StatusBar.styleDefault();
+            //StatusBar.styleDefault();
         }
     });
 })

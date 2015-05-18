@@ -9,6 +9,7 @@
     "angular-local-storage": "~0.1.5",
     "moment": "~2.9.0",
     "angular-moment": "~0.9.2",
-    "angular-preload-image": "*"
+    "angular-preload-image": "*",
+    "ngCordova": "~0.1.15-alpha"
   }
 }

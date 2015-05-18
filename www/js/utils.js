@@ -13,8 +13,11 @@ angular.module('starter.utils', [])
 			var defer = $q.defer();
 			if (PRODUCTION) {
 				$timeout(function(){
+					// alert('Antes do Device Ready');
 					document.addEventListener("deviceready", function () {
+						// alert('Depois do Device Ready');
 						var isOnline = $cordovaNetwork.isOnline();
+						// alert($cordovaNetwork.getNetwork());
 		 
 			            if (isOnline) {
 			            	defer.resolve();

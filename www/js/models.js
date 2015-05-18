@@ -91,6 +91,7 @@ angular.module('starter.models', [])
 	$cordovaPush,
 	$rootScope,
 	$cordovaOauth,
+	$cordovaToast,
 	$ionicPlatform,
 	FACEBOOK_APP_ID,
 	CLUB_ID
@@ -145,33 +146,35 @@ angular.module('starter.models', [])
 			// 		defer.reject();
 			// 	});
 
-			// alert('Chamando o push reg id');
+			//alert('Chamando o push reg id');
 			_this.getPushRegid()
 				.then(function(regid){
+					//alert('Reg id ' + regid);
+					//alert('Chamando o Facebook getAccess');
 					_this.getFacebookAccessToken()
 						.then(function(facebookToken){
 							// alert('Regid: ' + regid);
 							// alert('facebookToken: ' + facebookToken);
-							// alert('Pegando user');
+							//alert('Pegando user');
 							_this.getUser(regid, facebookToken)
 								.then(function(result){
 									// alert('Deu boa');
-									// alert(JSON.stringify(result));
+									//alert(JSON.stringify(result));
 									defer.resolve(result);
 								}, function(err){
 									// alert('Deu ruim');
-									// alert(JSON.stringify(err));
+									//alert(JSON.stringify(err));
+									$cordovaToast.show('Ocorreu um erro ao obter o usuário nos nossos servidores', 'short', 'bottom');
 									defer.reject();
 								});
 
 						}, function(err){
 							// alert('Rejeitou get facebook token');
+							$cordovaToast.show(err, 'short', 'bottom');
 							defer.reject();
-						})
-						.finally(function(){
-							
 						});
 				}, function(err){
+					$cordovaToast.show('Ocorreu um erro ao obter o regid do dispositivo', 'short', 'bottom');
 					defer.reject();
 				})
 				.finally(function(){
@@ -186,9 +189,10 @@ angular.module('starter.models', [])
 			var scope = 'email,user_birthday,user_photos';
 
 			var defer = $q.defer();
-			// alert('Estrou na função mas nao vai entrar no platform ready eu acho');
+			//alert('Estrou na função mas nao vai entrar no platform ready eu acho');
 			$ionicPlatform.ready(function() {
-				// alert('Etrou no platform ready');
+				//alert('Etrou no platform ready');
+				//alert('Vai usar o Oauth');
 	            $cordovaOauth.facebook(FACEBOOK_APP_ID, [scope]).then(function(result) {
 	                defer.resolve(result.access_token);
 	                
@@ -198,6 +202,7 @@ angular.module('starter.models', [])
 	             * @return {string}			Descrição do erro
 	             */
 	            }, function(err) {
+	            	//alert(err);
 	                defer.reject(err);
 	            });
 			});
@@ -207,30 +212,48 @@ angular.module('starter.models', [])
 		getPushRegid: function(){
 			var defer = $q.defer();
 
-		    var androidConfig = {senderID: PUSH_NOTIFICATION_SENDER_ID};
-			// alert('Antes de registrar');
-			$ionicPlatform.ready(function() {
-	            $cordovaPush.register(androidConfig).then(function(result) {
-	                // Success
-	                // alert('Registrou agora acho que nao vai entrar no registered');
-	            }, function(err) {
-	                // Error
-	                defer.reject('Erro ao registrar Push Notification');
-	            });
-	        });
+			if (ionic.Platform.isAndroid()) {
+			    var androidConfig = {senderID: PUSH_NOTIFICATION_SENDER_ID};
+				// alert('Antes de registrar');
+				$ionicPlatform.ready(function() {
+		            $cordovaPush.register(androidConfig).then(function(result) {
+		                // Success
+		                // alert('Registrou agora acho que nao vai entrar no registered');
+		            }, function(err) {
+		                // Error
+		                defer.reject('Erro ao registrar Push Notification');
+		            });
+		        });
 
-            $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
-                switch(notification.event) {
-                    case 'registered':
-                   		// alert('entrou hahah' + notification.regid);
-                        if (notification.regid.length > 0 ) {
-                            defer.resolve(notification.regid);
-                        } else {
-                        	defer.reject('Erro ao obter regid');
-                        }
-                    break;
-                }
-            });
+	            $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+	                switch(notification.event) {
+	                    case 'registered':
+	                   		// alert('entrou hahah' + notification.regid);
+	                        if (notification.regid.length > 0 ) {
+	                            defer.resolve(notification.regid);
+	                        } else {
+	                        	defer.reject('Erro ao obter regid');
+	                        }
+	                    break;
+	                }
+	            });
+			} else if(ionic.Platform.isIOS()){
+	            config = {
+	                "badge": true,
+	                "sound": true,
+	                "alert": true,
+	            };
+
+                $cordovaPush.register(config).then(function(result) {
+                    // alert("result: " + result);
+                    defer.resolve(result);
+                }, function(err) {
+                	defer.reject('Erro ao obter o token push IOS');
+                    // alert("Registration error: " + err);
+                });
+			} else {
+				defer.reject('Plataforma nao identificada');
+			}
 
             return defer.promise;
         }

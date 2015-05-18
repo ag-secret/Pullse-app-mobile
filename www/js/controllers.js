@@ -16,10 +16,12 @@ angular.module('starter.controllers', [])
 	$timeout,
 	$ionicSlideBoxDelegate,
 	$ionicModal,
+	$cordovaToast,
 	$state,
 	$ionicHistory,
 	Evento,
 	Me,
+	DEFAULT_ROUTE,
 	WEBSERVICE_URL,
 	Network,
 	localStorageService
@@ -62,17 +64,15 @@ angular.module('starter.controllers', [])
 						if (result) {
 							Me.data = result;
 							localStorageService.set('Me', Me.data);
-							$state.go('app.eventos');
+							$state.go(DEFAULT_ROUTE);
 						} else {
-							$scope.loginError = true;
+							$cordovaToast.show('Ocorreu um erro ao efetuar o login', 'short', 'bottom');
 						}
 					}, function(err){
-						$scope.loginError = true;
 					})
 					.finally(function(){
 						$ionicLoading.hide();
 					});
-				
 			}, function(err){
 				$scope.networkError = true;
 			});
@@ -333,21 +333,24 @@ angular.module('starter.controllers', [])
 	$ionicPlatform,
 	$state,
 	$timeout,
+	$scope,
 	DEFAULT_ROUTE,
 	Evento,
 	Me,
 	localStorageService
 ){
-	var me = localStorageService.get('Me');
-	if (me) {
-		Evento.listas = localStorageService.get('listas');
-		//Evento.eventos = localStorageService.get('eventos'); Apagar
-		Me.localData = localStorageService.get('localData') || {}; // Object em vez de null
-		Me.data = me;
-		$state.go(DEFAULT_ROUTE);
-	} else {
-		$state.go('login');
-	}
+	$scope.$on('$ionicView.afterEnter', function(){
+		var me = localStorageService.get('Me');
+		if (me) {
+			Evento.listas = localStorageService.get('listas');
+			//Evento.eventos = localStorageService.get('eventos'); Apagar
+			Me.localData = localStorageService.get('localData') || {}; // Object em vez de null
+			Me.data = me;
+			$state.go(DEFAULT_ROUTE);
+		} else {
+			$state.go('login');
+		}
+	});
 })
 .controller('CheckinMatchesController', function(
 	$stateParams,
@@ -882,7 +885,10 @@ angular.module('starter.controllers', [])
 	 */
 	$scope.getCurrentEventByButton = function(){
 		$scope.loading = true;
-		$scope.getCurrentEvent(true);
+		// Demora para ele não ficar igual um doido apertando o botão
+		$timeout(function(){
+			$scope.getCurrentEvent(true);	
+		}, 5000);
 	};
 	$scope.doCheckin = function(){
 		Network.check()
