@@ -230,11 +230,15 @@ angular.module('starter.controllers', [])
 	$ionicSlideBoxDelegate,
 	$scope,
 	$timeout,
+	$ionicHistory,
+	$state,
+	$stateParams,
 	Me,
 	Evento,
 	Network,
 	WEBSERVICE_URL
 ){
+	//alert(JSON.stringify($stateParams));
 	/**
 	 * Controla o alert que não tem eventos. Não usamos o "eventos.length == 0" por que antes de
 	 * carregar esta condição seria satisfeito porém não quer dizer que nao tenha evento e sim
@@ -249,6 +253,7 @@ angular.module('starter.controllers', [])
 	 */
 	$scope.currentEvent = null;
 	$scope.$on('$ionicView.beforeEnter', function(){
+		//alert(JSON.stringify($stateParams));
 		 /**
 		 * Eventos
 		 * @type {Array}
@@ -257,7 +262,7 @@ angular.module('starter.controllers', [])
 		$ionicSlideBoxDelegate.update();
 		$ionicSideMenuDelegate.canDragContent(false);
 		
-		if ($scope.events.length === 0) {
+		if ($scope.events.length === 0 || $stateParams.refresh == 1) {
 			$scope.getEvents();
 		}
 	});
@@ -723,7 +728,7 @@ angular.module('starter.controllers', [])
 							$scope.stopInterval();
 							$scope.stopCheckEventTimer();
 						} else {
-							console.log(result);
+							//console.log(result);
 							/**
 							 * Aqui verifica se o evento mudou, se sim ele
 							 * limpa os perfis e manda carregar novos agora baseado no
@@ -785,7 +790,7 @@ angular.module('starter.controllers', [])
 		$scope.stopCheckEventTimer();
 		timerCheckCurrentEvent = $interval(function(){
 			$scope.getCurrentEvent(false);
-		}, 5000);
+		}, 60000);
 	};
 	$scope.stopCheckEventTimer = function(){
 		console.log('Parando interval event');
@@ -1074,21 +1079,35 @@ angular.module('starter.controllers', [])
 			});
 	};
 })
-.controller('SobreController', function($scope, INTERAGIR_FACEBOOK_FANPAGE, INTERAGIR_PHONE) {
-    $scope.phone = INTERAGIR_PHONE;
-	
+.controller('SobreController', function($scope, INTERAGIR_FACEBOOK_PAGE, INTERAGIR_PHONE) {
+    
+	$scope.interagirFacebookPage = INTERAGIR_FACEBOOK_PAGE;
+	$scope.phone = INTERAGIR_PHONE;
+
 	$scope.openFacebookFanPage = function(){
-		window.open(INTERAGIR_FACEBOOK_FANPAGE, '_system', 'location=yes');
+		window.open('https://www.facebook.com' + $scope.interagirFacebookPage, '_system', 'location=yes');
 	};
 	$scope.openDial = function(){
-		window.open('tel:' + INTERAGIR_PHONE, '_system', 'location=no');
+		window.open('tel:' + $scope.phone, '_system', 'location=no');
 	};
 })
-.controller('InstitucionalController', function($scope, FACEBOOKFANPAGE, PHONE) {
+.controller('InstitucionalController', function(
+	$scope,
+	INSTAGRAM,
+	FACEBOOK_PAGE,
+	PHONE,
+	Contato
+) {
+
+	$scope.instagram = '@' + INSTAGRAM;
+	$scope.facebookPage = FACEBOOK_PAGE;
 	$scope.phone = PHONE;
-	
+
 	$scope.openFacebookFanPage = function(){
-		window.open(FACEBOOKFANPAGE, '_system', 'location=yes');
+		window.open('https://www.facebook.com' + $scope.facebookPage, '_system', 'location=yes');
+	};
+	$scope.openInstagram = function(){
+		window.open('https://instagram.com' + $scope.facebookPage, '_system', 'location=yes');
 	};
 	$scope.openDial = function(){
 		window.open('tel:' + PHONE, '_system', 'location=no');
@@ -1102,8 +1121,25 @@ angular.module('starter.controllers', [])
  */
 .controller('ContatoController', function(
 	$scope,
+	INSTAGRAM,
+	FACEBOOK_PAGE,
+	PHONE,
 	Contato
 ) {
+
+	$scope.instagram = '@' + INSTAGRAM;
+	$scope.facebookPage = FACEBOOK_PAGE;
+	$scope.phone = PHONE;
+
+	$scope.openFacebookFanPage = function(){
+		window.open('https://www.facebook.com' + $scope.facebookPage, '_system', 'location=yes');
+	};
+	$scope.openInstagram = function(){
+		window.open('https://instagram.com' + $scope.facebookPage, '_system', 'location=yes');
+	};
+	$scope.openDial = function(){
+		window.open('tel:' + PHONE, '_system', 'location=no');
+	};
 	/**
 	 * É executado quando usuario aperta o botão de enviar o contato 
 	 */
@@ -1166,8 +1202,11 @@ angular.module('starter.controllers', [])
 
 .controller('MapaController', function(
 	$scope,
-	uiGmapGoogleMapApi
+	uiGmapGoogleMapApi,
+	ENDERECO
 ){
+
+	$scope.endereco = ENDERECO;
 
 	uiGmapGoogleMapApi.then(function(maps) {
 		$scope.marker = {

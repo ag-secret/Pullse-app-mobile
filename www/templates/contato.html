@@ -7,16 +7,33 @@
     </ion-nav-buttons>
 
 	<ion-content class="content" scrollbar-y="false" has-bouncing="false">
-		<div style="height: 100%; width: 100%; padding: 15px 15px 18px 15px;">
+		<!-- <div style="height: 100%; width: 100%; padding: 15px 15px 18px 15px;">
+			<textarea
+				placeholder="Digite aqui a sua mensagem..."
+				class="custom-input textarea-contato"
+				ng-model="$parent.mensagem">
+			</textarea>
+		</div> -->
+		<div class="padding" style="height: 300px;">
 			<textarea
 				placeholder="Digite aqui a sua mensagem..."
 				class="custom-input textarea-contato"
 				ng-model="$parent.mensagem">
 			</textarea>
 		</div>
-		<!-- <div class="row">
-			<div class="col">
-			</div>
-		</div> -->
+        <ion-list style="text-align: left;">
+            <ion-item class="item-icon-left" ng-click="openFacebookFanPage()" style="border: 0">
+                {{facebookPage}}
+                <span class="icon ion-social-facebook"></span>
+            </ion-item>
+            <ion-item class="item-icon-left" ng-click="openInstagram()">
+                {{instagram}}
+                <span class="icon ion-social-instagram"></span>
+            </ion-item>
+            <ion-item class="item-icon-left" ng-click="openDial()" style="border: 0">
+                {{phone}}
+                <span class="icon ion-social-whatsapp-outline"></span>
+            </ion-item>
+        </ion-list>
 	</ion-content>
 </ion-view>

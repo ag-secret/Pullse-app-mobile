@@ -20,15 +20,20 @@ angular.module('starter', [
 .constant('PRODUCTION', true)
 // .constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
 .constant('WEBSERVICE_URL', 'http://api.bbgl.kinghost.net')
+
 .constant('FACEBOOK_APP_ID', 401554549993450)
 .constant('PUSH_NOTIFICATION_SENDER_ID', '552977488644')
 
 .constant('CLUB_ID', 1)
 
-.constant('FACEBOOKFANPAGE', 'https://www.facebook.com/PullseClub')
+.constant('FACEBOOK_PAGE', '/PullseClub')
+.constant('INSTAGRAM', 'pullseclub')
 .constant('PHONE', '(24) 97401-3348')
-.constant('INTERAGIR_FACEBOOK_FANPAGE', 'https://www.facebook.com/interagir')
+.constant('ENDERECO', 'Rua Senador Pinheiro Machado, Nº 210 Jardim Amália I - Volta Redonda / RJ')
+
+.constant('INTERAGIR_FACEBOOK_PAGE', '/interagir')
 .constant('INTERAGIR_PHONE', '(24) 3336-1566')
+
 .constant('DEFAULT_ROUTE', 'app.lista-vip')
 
 .config(function(uiGmapGoogleMapApiProvider) {
@@ -49,11 +54,13 @@ angular.module('starter', [
 .run(function(
     // $cordovaLocalNotification,
     $cordovaPush,
+    $cordovaStatusbar,
+    $cordovaToast,
+    $cordovaVibration,
+    $http,
     $ionicHistory,
     $ionicPlatform,
     $rootScope,
-    $cordovaStatusbar,
-    $http,
     $state,
     PRODUCTION,
     PUSH_NOTIFICATION_SENDER_ID
@@ -76,6 +83,41 @@ angular.module('starter', [
             $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
                 switch(notification.event) {
                     case 'message':
+                        switch(notification.payload.type){
+                            case 'agenda':
+                                if (notification.foreground) {
+                                    $cordovaToast.show('Agenda da semana atualizada!', 'long', 'bottom');
+                                     $cordovaVibration.vibrate(500);
+                                } else {
+                                    $ionicHistory.nextViewOptions({
+                                      disableBack: true
+                                    });                                    
+                                    $state.go('app.eventos', {refresh: 1});
+                                }
+                                break;
+                            case 'combination':
+                                if (notification.foreground) {
+                                    $cordovaToast.show('Você acaba de combinar com alguém!', 'long', 'bottom');
+                                     $cordovaVibration.vibrate(500);
+                                } else {
+                                    $ionicHistory.nextViewOptions({
+                                      disableBack: true
+                                    });                                    
+                                    $state.go('app.checkin-main');
+                                }
+                                break;
+                            case 'curtida':
+                                if (notification.foreground) {
+                                    $cordovaToast.show('Você acaba de receber uma nova curtida!', 'long', 'bottom');
+                                     $cordovaVibration.vibrate(500);
+                                } else {
+                                    $ionicHistory.nextViewOptions({
+                                      disableBack: true
+                                    });                                    
+                                    $state.go('app.checkin-main');
+                                }
+                                break;
+                        }
                         // Entra aqui quando recebe um mensagem
                         // alert('Recebeu');
                         // alert(notification.collapse_key);
@@ -161,7 +203,7 @@ angular.module('starter', [
             }
         })
         .state('app.eventos', {
-            url: "/eventos",
+            url: "/eventos/:refresh",
             views: {
                 'menuContent': {
                     templateUrl: "templates/eventos.html",

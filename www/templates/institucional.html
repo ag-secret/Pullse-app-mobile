@@ -29,11 +29,15 @@
         <br>
 
         <ion-list style="text-align: left;">
-            <ion-item class="item-icon-left" ng-click="openFacebookFanPage()">
-                /PullseClub
+            <ion-item class="item-icon-left" ng-click="openFacebookFanPage()" style="border: 0">
+                {{facebookPage}}
                 <span class="icon ion-social-facebook"></span>
             </ion-item>
-            <ion-item class="item-icon-left" ng-click="openDial()">
+            <ion-item class="item-icon-left" ng-click="openInstagram()">
+                {{instagram}}
+                <span class="icon ion-social-instagram"></span>
+            </ion-item>
+            <ion-item class="item-icon-left" ng-click="openDial()" style="border: 0">
                 {{phone}}
                 <span class="icon ion-social-whatsapp-outline"></span>
             </ion-item>
