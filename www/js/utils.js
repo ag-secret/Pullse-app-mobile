@@ -9,8 +9,10 @@ angular.module('starter.utils', [])
 ){
  
 	return {
-		check: function(){
+		check: function(showToast){
 			var defer = $q.defer();
+			var toastControl = showToast || true;
+
 			if (PRODUCTION) {
 				$timeout(function(){
 					// alert('Antes do Device Ready');
@@ -22,7 +24,10 @@ angular.module('starter.utils', [])
 			            if (isOnline) {
 			            	defer.resolve();
 			            } else {
-			            	$cordovaToast.show('Sem conexão com a internet.', 'short', 'bottom');
+			            	if (toastControl) {
+			            		$cordovaToast.show('Sem conexão com a internet.', 'short', 'bottom');	
+			            	}
+			            	
 			            	defer.reject();
 			            }
 					}, false);

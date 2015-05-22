@@ -101,7 +101,8 @@ angular.module('starter.controllers', [])
 	$timeout,
 	WEBSERVICE_URL,
 	Evento,
-	Network
+	Network,
+	Me
 ) {
 	/**
 	 * Mostra/esconde a mensagem de "Nenhuma lista"
@@ -127,7 +128,7 @@ angular.module('starter.controllers', [])
 		 * Listas
 		 * @type {Array}
 		 */
-		$scope.listas = [];
+		$scope.listas = Me.localData.listas || [];
 		/**
 		 * Só mostra o loading se a tela estiver vazio de listas,
 		 * caso contrario ele não mostra e o carregamento será feito no fundo.
@@ -175,8 +176,8 @@ angular.module('starter.controllers', [])
 			.then(function(){
 				$timeout(function(){
 					Evento.getLists()
-						.then(function(result){
-							$scope.listas = result || [];
+						.then(function(){
+							$scope.listas = Me.localData.listas;
 						})
 						.finally(function(){
 							$scope.loading = false;
@@ -340,17 +341,23 @@ angular.module('starter.controllers', [])
 	$timeout,
 	$scope,
 	DEFAULT_ROUTE,
-	Evento,
 	Me,
+	Evento,
+	Checkin,
 	localStorageService
 ){
 	$scope.$on('$ionicView.afterEnter', function(){
 		var me = localStorageService.get('Me');
 		if (me) {
-			Evento.listas = localStorageService.get('listas');
-			//Evento.eventos = localStorageService.get('eventos'); Apagar
-			Me.localData = localStorageService.get('localData') || {}; // Object em vez de null
+			Me.localData = localStorageService.get('localData') || {};
 			Me.data = me;
+
+			/**
+			 * Sobre o checkin
+			 */
+			Evento.currentEvent = localStorageService.get('currentEvent') || null;
+			Checkin.perfis = localStorageService.get('checkinPerfis') || [];
+
 			$state.go(DEFAULT_ROUTE);
 		} else {
 			$state.go('login');
@@ -403,7 +410,7 @@ angular.module('starter.controllers', [])
 					$scope.perfis = Checkin.matches;
 					$timeout(function(){
 						$scope.loadPerfis();	
-					}, 1000);
+					}, 2000);
 				} else {
 					$scope.loading = false;
 					$scope.$broadcast('scroll.refreshComplete');
@@ -429,33 +436,14 @@ angular.module('starter.controllers', [])
 	Util
 ){
 
-	
 	$scope.eventId = $stateParams.eventId;
 
-	$scope.$on('$ionicView.loaded', function(){
-		$scope.loading = true;
-		$scope.perfis = Checkin.pleopleThatIHeart;
-		$scope.loadPerfis();
-	});
 	$scope.$on('$ionicView.beforeEnter', function(){
+		console.log('entrou!!');
 		$scope.loading = true;
 		$scope.perfis = Checkin.pleopleThatIHeart;
 		$scope.loadPerfis();
 	});
-
-	var interval = null;
-	$scope.startInterval = function(){
-		$scope.stopInterval();
-		console.log('Iniciando timer matches');
-		interval = $interval(function(){
-			$scope.loadPerfis();
-		}, 1000);
-	};
-
-	$scope.stopInterval = function(){
-		console.log('Parando timer matches');
-		$interval.cancel(interval);
-	};
 
 	$scope.loadPerfis = function(){
 		Checkin.getPeopleThatIHeart($scope.eventId, 0)
@@ -464,17 +452,12 @@ angular.module('starter.controllers', [])
 					$scope.perfis = Checkin.pleopleThatIHeart;
 					$timeout(function(){
 						$scope.loadPerfis();	
-					}, 1000);
-				} else {
-					$scope.loading = false;
-					$scope.$broadcast('scroll.refreshComplete');
-					$scope.startInterval();
+					}, 2000);
 				}
-			}, function(err){
-				
 			})
 			.finally(function(){
-
+				$scope.loading = false;
+				$scope.$broadcast('scroll.refreshComplete');
 			});
 	};
 })
@@ -527,42 +510,41 @@ angular.module('starter.controllers', [])
 				break;
 		}
 
-		if ($scope.perfis.length === 0) {
-			$scope.loading = true;	
-		}
-
-		$scope.loadPerfis('first');
+		$scope.loading = true;
+		$timeout(function(){
+			$scope.loadPerfis('first');
+		}, 1500);
+		
 	});
 	/**
 	 * Pausa o timer na saida da view para nao sobrecarregar
 	 */
-	$scope.$on('$ionicView.beforeLeave', function(){
-		$scope.loading = false;
-		$scope.stopInterval();
-	});
+	// $scope.$on('$ionicView.beforeLeave', function(){
+	// 	$scope.loading = false;
+	// 	$scope.stopInterval();
+	// });
 	/**
 	 * Incia o Timer
 	 * @return {[type]} [description]
 	 */
-	$scope.startInterval = function(){
-		console.log('Iniciando INTERVALO!!!!!!!!');
-		$scope.stopInterval();
-		$timeout(function(){
-			interval = $interval(function(){
-				$scope.loadPerfis('timer');
-			}, intervalTime);
-		}, intervalTime);
+	// $scope.startInterval = function(){
+	// 	console.log('Iniciando INTERVALO!!!!!!!!');
+	// 	$scope.stopInterval();
+	// 	$timeout(function(){
+	// 		interval = $interval(function(){
+	// 			$scope.loadPerfis('timer');
+	// 		}, intervalTime);
+	// 	}, intervalTime);
 		
-	};
+	// };
 
-	$scope.stopInterval = function(){
-		console.log('Parando intervalo!!!!!');
-		$interval.cancel(interval);
-		interval = null;
-	};
+	// $scope.stopInterval = function(){
+	// 	console.log('Parando intervalo!!!!!');
+	// 	$interval.cancel(interval);
+	// 	interval = null;
+	// };
 
 	$scope.loadPerfis = function(event){
-		$scope.stopInterval();
 		Network.check()
 			.then(function(result){
 				Checkin.getHearts($scope.eventId, flag)
@@ -582,7 +564,7 @@ angular.module('starter.controllers', [])
 							
 							$timeout(function(){
 								$scope.loadPerfis(event);	
-							}, 1000);
+							}, 2000);
 						} else {
 							if ($scope.perfis.length === 0) {
 								$scope.noPeople = true;
@@ -594,7 +576,7 @@ angular.module('starter.controllers', [])
 								$scope.$broadcast('scroll.refreshComplete');
 							}
 
-							$scope.startInterval();
+							// $scope.startInterval();
 						}
 					}, function(err){
 						$scope.loading = false;
@@ -665,50 +647,76 @@ angular.module('starter.controllers', [])
 	Me,
 	Network
 ) {
-	$ionicModal.fromTemplateUrl('templates/modal/checkin-main-search.html', {
-		scope: $scope,
-		animation: 'slide-in-up'
-	}).then(function(modal) {
-		$scope.modal = modal;
-	});
-	$scope.openModal = function() {
-		$scope.modal.show();
-	};
-	/**
-	 * Fecha a modal
-	 */
-	$scope.closeModal = function() {
-		$scope.modal.hide();
-	};
+
+	////////////////////////////////////
+	// Sobre o getCurrentEvent Timer //
+	////////////////////////////////////
+	var getCurrentEventTimerInterval = 60000;
+	var timerGetCurrentEvent = null;
+
+	////////////////////////////////
+	// Sobre o getProfiles Timer //
+	////////////////////////////////
+	var getProfilesTimerInterval = 25000;
+	var timerGetProfiles = null;
+
+	var timeoutMoreProfiles = null;
+
+	var getCurrentEventByButtonDelay = 10000;
 
 	$scope.alertNoEvents = false;
 	$scope.alertNoProfiles = false;
 	$scope.hasNewProfiles = false;
 
+	$scope.loadingMoreProfiles = false;
+
 	$scope.showCheckinButton = false;
 	
-	var timerRefreshData = null;
-	var timerCheckCurrentEvent = null;
-	
-	$scope.currentEvent = null;
-	
-	$scope.perfis = Checkin.perfis;
+	var getProfilesDelay = 2000;
 	
 	$scope.$on('$ionicView.beforeEnter', function(){
-		$ionicHistory.clearHistory();
-		var flag = false;
-		
+		$scope.currentEvent = Evento.currentEvent;
+		if (!$scope.currentEvent) {
+			$scope.alertNoEvents = true;
+			$scope.loading = true;
+		}
+
+		$scope.perfis = Checkin.perfis;
 		if ($scope.perfis.length === 0) {
 			$scope.alertNoProfiles = true;
-			$scope.loading = true;
-			flag = true;
 		}
-		$timeout(function(){
-			$scope.getCurrentEvent(flag);
-		}, 1000);
+
+		/**
+		 * Primeiro argumento diz respeito se a internet falhar se vai 
+		 * ter toast, nessas chamadas tudo bem, porém quando se chama
+		 * atraves do timer ai o toast não deve aparecer
+		 * por que imagina que internet dele caiu ai vai
+		 * ficar mostrando toast a cada chamada do timer
+		 */
+		$scope.getCurrentEvent(true)
+			.then(function(result){
+				$scope.handleGetCurrentEventFirstTime(result);
+			});
 	});
-	$scope.getCurrentEvent = function(flag){
-		Network.check()
+
+	$scope.handleGetCurrentEventFirstTime = function(result){
+		if (result) {
+			$scope.startGetCurrentEventTimer();
+			if ($scope.currentEvent) {
+				$scope.alertNoEvents = false;
+
+				$scope.loadingMoreProfiles = true;
+				$scope.getProfiles();
+			}
+		}
+	};
+
+	$scope.getCurrentEvent = function(networkHasToast){
+
+		console.log('Tentando pegar evento atual');
+		var deferGerCurrentEvent = $q.defer();
+
+		Network.check(networkHasToast)
 			.then(function(result){
 				Evento.getCurrent()
 					.then(function(result){
@@ -719,14 +727,20 @@ angular.module('starter.controllers', [])
 							 * e o botão para carregar novos
 							 */
 							$scope.currentEvent = null;
-							Checkin.perfis = [];
+							Evento.resetCurrentEvent();
+							/**
+							 * Apaga o array perfis da Factory e do localStorage
+							 */
 							$scope.perfis = [];
+							Checkin.resetPerfis();
+
 							$scope.alertNoEvents = true;
 							$scope.showCheckinButton = false;
 							$scope.loading = false;
 
-							$scope.stopInterval();
-							$scope.stopCheckEventTimer();
+							$scope.stopGetProfilesTimer();
+							$scope.stopGetCurrentEventTimer();
+							$scope.stopTimeoutMoreProfiles();
 						} else {
 							//console.log(result);
 							/**
@@ -750,60 +764,87 @@ angular.module('starter.controllers', [])
 								$scope.showCheckinButton = true;
 							}
 							
-							$scope.getNewPerfis(flag);
-							$scope.startCheckEventTimer();
+							//$scope.getNewPerfis(flag);
+							/**
+							 * É necessário passar o resultado no resolve
+							 * Por que só será startado o timer getCurrentEvent se tiver resultado
+							 * caso contrario vai para a tela aonde fala que não tem nenhum evento
+							 * rolando e com o botão, nessa parte nao rola o timer
+							 * só o botão para a pessoa ativar a atualização assim
+							 * que ela quiser.
+							 */
+							deferGerCurrentEvent.resolve(result);
 						}
 					}, function(err){
 						$scope.loading = false;
+						deferGerCurrentEvent.reject();
 					});
 			}, function(err){
 				$scope.loading = false;
+				deferGerCurrentEvent.reject();
 			});
+
+			return deferGerCurrentEvent.promise;
 	};
 	/**
 	 * Pausa o timer na saida da view para nao sobrecarregar
 	 */
 	$scope.$on('$ionicView.beforeLeave', function(){
-		$scope.stopInterval();
-		$scope.stopCheckEventTimer();
+
+		$scope.stopTimeoutMoreProfiles();
+
+		$scope.stopGetProfilesTimer();
+		$scope.stopGetCurrentEventTimer();
 	});
-	/**
-	 * Inicia o timer que atualiza os dados da tela tanto do evento quanto dos
-	 * perfis deste evento
-	 */
-	$scope.startInterval = function(){
-		$scope.stopInterval();
-		timerRefreshData = $interval(function(){
-			$scope.getNewPerfis(false);
-		}, 5000);
-	};
-	/**
-	 * Para o intervalo
-	 */
-	$scope.stopInterval = function(){
-		console.log('Parando interval');
-		$interval.cancel(timerRefreshData);
-		timerRefreshData = null;
+
+	$scope.stopTimeoutMoreProfiles = function(){
+		$timeout.cancel(timeoutMoreProfiles);
+		timeoutMoreProfiles = null;	
 	};
 
-	$scope.startCheckEventTimer = function(){
-		$scope.stopCheckEventTimer();
-		timerCheckCurrentEvent = $interval(function(){
+	//////////////////////////////////////////////////////
+	// Métodos que iniciam e terminam getProfilesTimer //
+	//////////////////////////////////////////////////////
+	$scope.startGetProfilesTimer = function(){
+		$scope.stopGetProfilesTimer();
+		$scope.stopTimeoutMoreProfiles();
+
+		console.log('Iniciando getProfilesTimer');
+		timerGetProfiles = $interval(function(){
+			$scope.getProfiles();
+		}, getProfilesTimerInterval);
+	};
+	$scope.stopGetProfilesTimer = function(){
+		console.log('Parando getProfilesTimer');
+		$interval.cancel(timerGetProfiles);
+		timerGetProfiles = null;
+	};
+	//////////////////////////////////////////////////////////////
+	// Métodos  que iniciam e terminam o timer getCurrentEvent //
+	//////////////////////////////////////////////////////////////
+	$scope.startGetCurrentEventTimer = function(){
+		$scope.stopGetCurrentEventTimer();
+		console.log('Iniciando getCurrentEventTimer');
+		timerGetCurrentEvent = $interval(function(){
+			/**
+			 * primeiro argumento false para não mostrar toast
+			 * caso a internet falhe
+			 */
 			$scope.getCurrentEvent(false);
-		}, 60000);
+		}, getCurrentEventTimerInterval);
 	};
-	$scope.stopCheckEventTimer = function(){
-		console.log('Parando interval event');
-		$interval.cancel(timerCheckCurrentEvent);
-		timerCheckCurrentEvent = null;
+	$scope.stopGetCurrentEventTimer = function(){
+		console.log('Parando getCurrentEventTimer');
+		$interval.cancel(timerGetCurrentEvent);
+		timerGetCurrentEvent = null;
 	};
 
-	
-	$scope.getNewPerfis = function(flag){
-		$scope.stopInterval();
-		Network.check()
+	$scope.getProfiles = function(){
+		console.log('Pegando profiles');
+		$scope.stopGetProfilesTimer();
+		Network.check(false)
 			.then(function(result){
-				Checkin.getAll($scope.currentEvent.id)
+				Checkin.getAllProfiles($scope.currentEvent.id)
 					.then(function(result){
 						if (result) {
 							$scope.alertNoProfiles = false;
@@ -813,27 +854,32 @@ angular.module('starter.controllers', [])
 							 * botao de 'novos perfis'. Independendo do evento caso haja perfis novos
 							 * ele chama o refresh Events novamente para refazer todo o processo
 							 */
-							if (flag || $scope.perfis.length === 0) {
-								$scope.perfis = Checkin.perfis;
-							} else {
-								$scope.hasNewProfiles = true;
-							}
+							// if (flag || $scope.perfis.length === 0) {
+							// 	$scope.perfis = Checkin.perfis;
+							// } else {
+							// 	$scope.hasNewProfiles = true;
+							// }
+							$scope.perfis = Checkin.perfis;
 							/**
 							 * Faz um delay para chamar novamente para nao sobrecarregar o banco de dados]
 							 */
-							$timeout(function(){
-								$scope.getNewPerfis(flag);
-							}, 2000);
+							timeoutMoreProfiles = $timeout(function(){
+								$scope.getProfiles();
+							}, getProfilesDelay);
 						} else {
-							$scope.loading = false;
+							$scope.loadingMoreProfiles = false;
 							if ($scope.perfis.length === 0) {
 								$scope.alertNoProfiles = true;
 							}
-							$scope.startInterval();
+							$scope.startGetProfilesTimer();
 						}
+					}, function(){
+						$scope.loadingMoreProfiles = false;
+						$scope.startGetProfilesTimer();
 					});
 			}, function(err){
-				$scope.loading = false;
+				$scope.loadingMoreProfiles = false;
+				$scope.startGetProfilesTimer();
 			});
 	};
 	/**
@@ -850,39 +896,6 @@ angular.module('starter.controllers', [])
 		$scope.perfis = Checkin.perfis;
 		$scope.hasNewProfiles = false;
 	};
-	/**
-	 * Atualiza os dados quando o usuario usa o Refresher, ele passa o evento 
-	 * pullToRefresh para o metodo
-	 */
-	$scope.doPullToRefresh = function(){
-		$scope.stopInterval();
-		Network.check()
-			.then(function(result){
-				Checkin.getAll($scope.currentEvent.id)
-					.then(function(result){
-						if (result) {
-							$scope.alertNoProfiles = false;
-							$scope.perfis = Checkin.perfis;
-							$timeout(function(){
-								$scope.doPullToRefresh();
-							}, 1000);
-						} else {
-							if ($scope.perfis.length === 0) {
-								$scope.alertNoProfiles = true;
-							}
-							$scope.$broadcast('scroll.refreshComplete');
-							$scope.startInterval();
-						}
-					}, function(err){
-						$scope.$broadcast('scroll.refreshComplete');
-					})
-					.finally(function(){
-						$scope.hasNewProfiles = false;
-					});
-			}, function(err){
-				$scope.$broadcast('scroll.refreshComplete');
-			});
-	};
 
 	/**
 	 * Atualiza os dados quando o usuario clica no botao de atualizar, ele passa
@@ -892,27 +905,46 @@ angular.module('starter.controllers', [])
 		$scope.loading = true;
 		// Demora para ele não ficar igual um doido apertando o botão
 		$timeout(function(){
-			$scope.getCurrentEvent(true);	
-		}, 5000);
+			$scope.getCurrentEvent()
+				.then(function(result){
+					$scope.handleGetCurrentEventFirstTime(result);
+				});	
+		}, getCurrentEventByButtonDelay);
 	};
 	$scope.doCheckin = function(){
 		Network.check()
 			.then(function(result){
 				$ionicLoading.show({
-					template: 'Efetuando checkin em '+$scope.currentEvent.name+'...'
+					template: 'Efetuando checkin...'
 				});
 				$timeout(function(){
 					Evento.doCheckin($scope.currentEvent.id)
 						.then(function(result){
 							$scope.showCheckinButton = false;
-							$cordovaToast.show('Checkin feito com sucesso =)', 'long', 'bottom');
+							$cordovaToast.show('Checkin feito com sucesso =)', 'short', 'bottom');
 						}).finally(function(){
 							$ionicLoading.hide();
 						});
-				}, 1000);
+				}, 1500);
 			}, function(err){
 				$ionicLoading.hide();
 			});
+	};
+
+	$ionicModal.fromTemplateUrl('templates/modal/checkin-main-search.html', {
+		scope: $scope,
+		animation: 'slide-in-up'
+	}).then(function(modal) {
+		$scope.modal = modal;
+	});
+	$scope.openModal = function() {
+		$scope.modal.show();
+	};
+	/**
+	 * Fecha a modal
+	 */
+	$scope.closeModal = function() {
+		$scope.modal.hide();
 	};
   
 })
@@ -1175,14 +1207,11 @@ angular.module('starter.controllers', [])
 ) {
 	$ionicLoading.show({template: 'Saindo...'});
 	$timeout(function(){
-		Me.localData = {};
 		/**
 		 * Evento
 		 */
 		Evento.currentEvent = null;
-		Evento.checkinPerfis = [];
-		Evento.checkinInfoEventId = null;
-		Evento.currentEvent = null;
+
 		/**
 		 * Checkin
 		 */
@@ -1194,6 +1223,7 @@ angular.module('starter.controllers', [])
 		 * Me
 		 */
 		Me.data = null;
+		Me.localData = {};
 		localStorageService.clearAll();
 		$ionicLoading.hide();
 		$state.go('login');

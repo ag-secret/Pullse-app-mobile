@@ -8,42 +8,20 @@
 	    	<span class="icon ion-android-search"></span>
 	    </button>
     </ion-nav-buttons>
-    <div class="bar bar-subheader bar-stable" ng-show="currentEvent">
-		<div class="button-bar">
-			<a href="#/app/checkin-hearted-me/{{currentEvent.id}}/1" class="button button-dark" style="background-color: #131012; font-weight: bold!important">
-				Me curtiram
-			</a>
-			<a href="#/app/checkin-that-i-hearted/{{currentEvent.id}}/2" class="button button-dark" style="background-color: #131012; font-weight: bold!important">
-				Eu curti
-			</a>
-			<a href="#/app/checkin-matches/{{currentEvent.id}}/3" class="button button-dark" style="background-color: #131012; font-weight: bold!important">
-				Combinações
-			</a>
-		</div>
-    </div>
 
-<!-- 	<div
-		class="tabs tabs-top tabs-dark"
-		style="background-color: #131012!important; color: #FFF!important"
-		ng-show="currentEvent">
-		<a
-			style="color: #FFF!important"
-			class="tab-item" href="#/app/checkin-hearted-me/{{currentEvent.id}}/1">
+	<div class="tabs tabs-dark tabs-top" ng-show="currentEvent" style="background-color: #131012!important;">
+		<a href="#/app/checkin-hearted-me/{{currentEvent.id}}/1" class="tab-item">
 			Me curtiram
 		</a>
-		<a
-			style="color: #FFF!important"
-			class="tab-item" href="#/app/checkin-that-i-hearted/{{currentEvent.id}}/2">
+		<a href="#/app/checkin-that-i-hearted/{{currentEvent.id}}/2" class="tab-item">
 			Eu curti
 		</a>
-		<a
-			style="color: #FFF!important"
-			class="tab-item" href="#/app/checkin-matches/{{currentEvent.id}}/3">
+		<a href="#/app/checkin-matches/{{currentEvent.id}}/3" class="tab-item">
 			Combinações
 		</a>
-	</div> -->
+	</div>
 
-	<ion-content class="content" ng-class="{'has-subheader': currentEvent}" has-bouncing="false">
+	<ion-content class="content" ng-class="{'has-tabs-top': currentEvent}" has-bouncing="false">
 		<ion-refresher
 			spinner="ripple"
 			ng-if="!loading && alerNoEvents"
@@ -74,6 +52,10 @@
 			<button type="button" class="btn-custom" ng-click="getCurrentEventByButton()" ng-if="!loading">
 				Buscar novamente
 			</button>
+		</div>
+
+		<div class="text-center" style="clear: both; padding-top: 40px;" ng-if="loadingMoreProfiles">
+			<ion-spinner icon="ripple" class="spinner-stable"></ion-spinner>
 		</div>
 	</ion-content>
 

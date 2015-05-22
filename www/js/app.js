@@ -17,7 +17,7 @@ angular.module('starter', [
     'uiGmapgoogle-maps'
 ])
 
-.constant('PRODUCTION', true)
+.constant('PRODUCTION', false)
 // .constant('WEBSERVICE_URL', 'http://192.168.254.101:777/pullse-ws')
 .constant('WEBSERVICE_URL', 'http://api.bbgl.kinghost.net')
 
@@ -34,7 +34,7 @@ angular.module('starter', [
 .constant('INTERAGIR_FACEBOOK_PAGE', '/interagir')
 .constant('INTERAGIR_PHONE', '(24) 3336-1566')
 
-.constant('DEFAULT_ROUTE', 'app.lista-vip')
+.constant('DEFAULT_ROUTE', 'app.checkin-main')
 
 .config(function(uiGmapGoogleMapApiProvider) {
     uiGmapGoogleMapApiProvider.configure({
@@ -45,7 +45,7 @@ angular.module('starter', [
 })
 
 .config(function($ionicConfigProvider) {
-    //$ionicConfigProvider.views.transition('none');
+    $ionicConfigProvider.views.transition('none');
     if (ionic.Platform.platform() == 'ios') {
         $ionicConfigProvider.backButton.text('Voltar');
     }

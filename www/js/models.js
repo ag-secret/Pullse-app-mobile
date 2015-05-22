@@ -3,46 +3,6 @@ angular.module('starter.models', [])
 .constant('COMMUNICATION_ERROR_MESSAGE', 'Erro na comunicação com o servidor, favor tentar novamente.')
 .constant('COMMUNICATION_TIMEOUT', 15000)
 
-// .factory('myHttpInterceptor', function($q, $log) {
-//   return {
-//     // optional method
-//     request: function(config) {
-//      	// do something on success
-//      	return config;
-//     },
-
-//     // optional method
-//    'requestError': function(rejection) {
-//       // do something on error
-//       if (canRecover(rejection)) {
-//         return responseOrNewPromise;
-//       }
-//       return $q.reject(rejection);
-//     },
-
-
-
-//     // optional method
-//     'response': function(response) {
-//       // do something on success
-//       return response;
-//     },
-
-//     // optional method
-//    'responseError': function(rejection) {
-//       // do something on error
-//       if (canRecover(rejection)) {
-//         return responseOrNewPromise;
-//       }
-//       return $q.reject(rejection);
-//     }
-//   };
-// })
-
-// .config(['$httpProvider', function($httpProvider) {  
-//     $httpProvider.interceptors.push('myHttpInterceptor');
-// }])
-
 .factory('Util', function(
 	$cordovaToast,
 	$state,
@@ -58,7 +18,7 @@ angular.module('starter.models', [])
 		handleRequestError: function(code){
 			switch(code){
 				case 0:
-					$cordovaToast.show('O servidor demorou muito para responder, favor tentar novamente.', 'long', 'bottom');
+					$cordovaToast.show('O servidor demorou muito para responder, favor tentar novamente.', 'short', 'bottom');
 					break;
 				case 401:
 					$cordovaToast.show('A sua sessão expirou, favor logar novamente.', 'short', 'bottom');
@@ -270,11 +230,14 @@ angular.module('starter.models', [])
 	localStorageService
 ){
 	return {
-		currentEvent: null,
 		perfis: [],
 		peopleHeartedMe: [],
 		peopleThatIHearted: [],
 		matches: [],
+		resetPerfis: function(){
+			localStorageService.set('checkinPerfis', []);
+			this.perfis = [];
+		},
 		getGreaterId: function(){
 			var _this = this;
 			var greater = 0;
@@ -300,13 +263,13 @@ angular.module('starter.models', [])
 		/**
 		 * Pega todos os perfis que fizeram checkin no evento atual
 		 */
-		getAll: function(event_id){
+		getAllProfiles: function(event_id){
 			var defer = $q.defer();
 			var _this = this;
 
 			var params = Util.setAuthCredentials({
 				event_id: event_id,
-				last_id: Util.getGreaterField('checkinId', _this.perfis)
+				last_id: Util.getGreaterField('checkinId', _this.perfis || [])
 			});
 
 			$http({
@@ -328,6 +291,7 @@ angular.module('starter.models', [])
 				} else {
 					_this.perfis = data;
 				}
+				localStorageService.set('checkinPerfis', _this.perfis);
 				defer.resolve(data);
 			})
 			.error(function(data, code){
@@ -606,6 +570,10 @@ angular.module('starter.models', [])
 		currentEvent: null,
 		checkinPerfis: [],
 		checkinInfoEventId: null,
+		resetCurrentEvent: function(){
+			this.currentEvent = null;
+			localStorageService.set('currentEvent', null);
+		},
 		get: function(){
 			var defer = $q.defer();
 			var _this = this;
@@ -663,9 +631,10 @@ angular.module('starter.models', [])
 						value.finalImage = value.imagem_capa ? baseImageURL : value.facebook_img;
 						listas.push(value);
 					});
-					console.log(listas);
 				}
-				defer.resolve(listas);
+				Me.localData.listas = listas;
+				localStorageService.set('localData', Me.localData);
+				defer.resolve();
 			})
 			.error(function(data, code){
 				Util.handleRequestError(code);
@@ -727,6 +696,7 @@ angular.module('starter.models', [])
 			})
 			.success(function(data){
 				_this.currentEvent = data;
+				localStorageService.set('currentEvent', data);
 				defer.resolve(data);
 			})
 			.error(function(data, code){
